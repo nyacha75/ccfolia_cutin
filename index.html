@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>🌊 다인 컷인 에디터</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/upng-js@2.1.0/UPNG.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 기본 스타일 */
+        body { font-family: 'Malgun Gothic', sans-serif; background: #fff; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; }
+        h2 { color: #0055FF; margin-bottom: 25px; }
+        .container { display: flex; gap: 10px; max-width: 1200px; width: 100%; justify-content: center; align-items: flex-start; }
+        
+        /* 캔버스 영역 */
+        .canvas-wrapper { display: flex; flex-direction: column; width: fit-content; max-width: 100%; }
+        canvas { 
+            border: 2px solid #0055FF; border-radius: 4px; background: #fff; 
+            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%); 
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; 
+        }
+        .hint-box { font-size: 12px; color: #555; line-height: 1.6; margin-top: 10px; background: #FCFAF7; padding: 15px; border-radius: 4px; border: 1px solid #E8D8C8; box-sizing: border-box; }
+        .hint-box span { color: #0055FF; font-weight: bold; }
+        
+        /* 컨트롤 패널 */
+        .control-panel { width: 420px; display: flex; flex-direction: column; gap: 15px; position: sticky; top: 20px; background: #FCFAF7; padding: 20px; border-radius: 8px; border: 2px solid #E8D8C8; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-height: 90vh; overflow-y: auto; }
+        .control-group { border-bottom: 1px solid #E8D8C8; padding-bottom: 15px; }
+        .control-group:last-child { border-bottom: none; padding-bottom: 0; }
+        .control-group h3 { margin: 0 0 10px 0; font-size: 15px; color: #0055FF; }
+        
+        /* 입력 요소 스타일 */
+        input, select { background: #fff; border: 1px solid #E8D8C8; padding: 7px; border-radius: 4px; box-sizing: border-box; color: #333; font-size: 12px; }
+        input:focus, select:focus { outline: none; border-color: #0055FF; }
+        input[type="color"] { cursor: pointer; padding: 0; border: 1px solid #ccc; border-radius: 2px; }
+        input[type="checkbox"] { cursor: pointer; vertical-align: middle; margin: 0; }
+        input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; text-align: center; }
+
+        /* 버튼 및 레이아웃 */
+        .row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
+        .btn { background: #fff; color: #333; border: 1px solid #E8D8C8; flex: 1; padding: 8px 6px; font-size: 12px; cursor: pointer; border-radius: 4px; transition: 0.2s; text-align: center; }
+        .btn:hover { background: #F2E8DA; }
+        .btn.hl { background: #F2E8DA; font-weight: bold; }
+        .btn.hl:hover { background: #E8D8C8; }
+        .btn.magic { background: #0055FF; color: #fff; border-color: #0044CC; font-weight: bold; font-size: 13px; padding: 10px; }
+        .btn.magic:hover { background: #0044CC; }
+        
+        /* 레이어 리스트 */
+        .layer-list { max-height: 220px; overflow-y: auto; background: #fff; border: 1px solid #E8D8C8; border-radius: 4px; padding: 5px; }
+        .layer-item { background: #FCFAF7; margin-bottom: 5px; padding: 10px; border-radius: 4px; border: 1px solid #E8D8C8; cursor: grab; }
+        .layer-item.active { border-color: #0055FF; background: #F0F4FF; }
+        .layer-item.drag-over { border: 2px dashed #0055FF; opacity: 0.8; }
+        .thumb { width: 30px; height: 30px; object-fit: contain; background: #fff; border-radius: 4px; border: 1px solid #E8D8C8; flex-shrink: 0; }
+        .l-btn { background: #F2E8DA; border: 1px solid #E8D8C8; padding: 3px 6px; font-size: 10px; border-radius: 4px; cursor: pointer; }
+        .l-btn.del { background: #ff4d4d; color: #fff; border: none; font-size: 11px; }
+        .char-color-box { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .char-color-box span { font-size: 11px; font-weight: bold; color: #555; }
+        
+        /* 효과 텍스트 레이블 정렬 */
+        .fx-label { display: flex; align-items: center; gap: 3px; white-space: nowrap; cursor: pointer; }
+
+        /* 하단 액션 버튼 */
+        .action-btn { border: none; padding: 14px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 14px; color: #fff; }
+        #previewBtn { background: #E8D8C8; color: #333; border: 1px solid #DBC4AC; } 
+        #generateBtn { background: #0055FF; }
+        button:disabled { background: #ccc !important; cursor: not-allowed; color: #888 !important; }
+        
+        /* 스크롤바 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div style="visibility: hidden; position: absolute; font-family: 'Black Han Sans';">.</div>
+    <div style="visibility: hidden; position: absolute; font-family: 'Jua';">.</div>
+    <div style="visibility: hidden; position: absolute; font-family: 'Nanum Myeongjo';">.</div>
+
+    <h2>🌊 다인 컷인 에디터</h2>
+    <div class="container">
+        <div class="canvas-wrapper">
+            <canvas id="canvas" width="600" height="800"></canvas>
+            <div class="hint-box">
+                • <span>마우스 드래그</span>: 이동 (텍스트 드래그 시 텍스트만, 이미지 드래그 시 텍스트도 함께 이동) | <span>휠</span>: 크기 조절<br>
+                • <span>[세로 통일]</span>: 선택한 레이어의 세로 길이에 맞춰 나머지 이미지 크기 통일.<br>
+                • <span>[간단 배치]</span>: [세로 통일] → [세로 간격 정렬] → [캔버스 자르기] 원클릭 처리.
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="control-group">
+                <h3>1. 이미지</h3>
+                <div class="row">
+                    <label style="font-size:12px; width:80px;">파일 업로드:</label>
+                    <input type="file" id="imageInput" multiple accept="image/*" style="flex:1;">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>2. 캔버스 조절 및 이미지 정렬</h3>
+                <div class="row"><button class="btn magic" onclick="act('quick')">✨ 간단 배치 (자동 정렬)</button></div>
+                <div class="row">
+                    <button class="btn hl" onclick="act('match')">📏 세로 통일</button>
+                    <button class="btn hl" onclick="act('crop')">✂️ 캔버스 자르기</button>
+                </div>
+                <div class="row">
+                    <button class="btn" onclick="act('distH')">↔️ 가로 간격 정렬</button>
+                    <button class="btn" onclick="act('distV')">↕️ 세로 간격 정렬</button>
+                </div>
+                <div class="row" style="font-size: 12px; margin-top: 8px; justify-content: flex-start; gap: 10px;">
+                    <label>사이 간격(px):</label>
+                    <input type="number" id="gap" value="20" style="width:70px;">
+                </div>
+            </div>
+            
+            <div class="control-group" style="flex:1; display:flex; flex-direction:column;">
+                <h3>3. 레이어</h3>
+                <div id="layerList" class="layer-list"></div>
+            </div>
+            
+            <div class="control-group">
+                <h3>4. 타이포</h3>
+                <div class="row">
+                    <label style="font-size:12px; width:70px;">파일 업로드:</label>
+                    <input type="file" id="fontInput" multiple accept=".ttf,.otf,.woff,.woff2" style="flex:1;">
+                </div>
+                <div class="row">
+                    <label style="font-size:12px; width:70px;">적용 폰트:</label>
+                    <select id="globalFont" onchange="draw();" style="flex:1;">
+                        <option value="Black Han Sans" selected>블랙한산스</option>
+                        <option value="Jua">주아체</option>
+                        <option value="Nanum Myeongjo">나눔명조</option>
+                        <option value="Malgun Gothic">기본고딕</option>
+                    </select>
+                    <label style="font-size:12px; display:flex; align-items:center; margin-left:5px; white-space:nowrap;">크기: 
+                        <input type="number" id="gFontSize" value="60" onchange="draw()" style="width:45px; margin-left:4px;">
+                    </label>
+                </div>
+                <div class="row" style="font-size:11px; gap: 6px; justify-content: space-between; margin-top: 8px;">
+                    <label class="fx-label"><input type="checkbox" id="gBold" onchange="draw()"> 굵게</label>
+                    <label class="fx-label"><input type="checkbox" id="gItalic" checked onchange="draw()"> 기울임</label>
+                    <label class="fx-label"><input type="checkbox" id="gShadow" checked onchange="draw()"> 그림자</label>
+                    <label class="fx-label"><input type="checkbox" id="gStroke" checked onchange="draw()"> 테두리</label>
+                    <input type="color" id="gStrokeColor" value="#000000" onchange="draw()" style="width:20px; height:20px; flex-shrink:0;" title="테두리 색상">
+                    <label class="fx-label">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw()" style="width:28px; margin-left:2px; height:22px;"></label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>5. 출력 파일 형식</h3>
+                <select id="quality" style="width: 100%; font-size: 12px;">
+                    <option value="apng" selected>APNG (코코포리아 1MB 자동 최적화 방어)</option>
+                    <option value="gif_white">GIF - 흰색 배경 (잔상 완벽 제거)</option>
+                    <option value="gif_trans">GIF - 투명 배경 (잔상 완벽 제거)</option>
+                </select>
+            </div>
+            
+            <div>
+                <button id="previewBtn" class="action-btn">▶ 애니메이션 미리보기</button>
+                <button id="generateBtn" class="action-btn">🎬 파일 다운로드</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const $ = id => document.getElementById(id);
+        const canvasEl = $('canvas');
+        const ctx = canvasEl.getContext('2d', { willReadFrequently: true });
+        
+        let layers = [], customFonts = [], sel = -1;
+        let isDragImg = false, isDragText = false, isRes = false, isPlay = false;
+        let offX = 0, offY = 0, textRelX = 0, textRelY = 0;
+        let W = 600, H = 800;
+        let gifWorkerUrl = null; // 워커 Blob 캐싱 변수
+        
+        const ease = t => 1 - Math.pow(1 - t, 3);
+        
+        const getFontStr = () => {
+            const isItalic = $('gItalic').checked ? 'italic ' : '';
+            const isBold = $('gBold').checked ? 'bold ' : '';
+            const fSize = parseInt($('gFontSize').value) || 60;
+            return `${isItalic}${isBold}${fSize}px "${$('globalFont').value}"`;
+        };
+
+        $('fontInput').onchange = async e => {
+            for (let file of e.target.files) {
+                try {
+                    const fontName = file.name.split('.')[0];
+                    const buffer = await file.arrayBuffer();
+                    const font = new FontFace(fontName, buffer);
+                    await font.load();
+                    document.fonts.add(font);
+                    if(!customFonts.includes(fontName)) {
+                        customFonts.push(fontName);
+                        const opt = document.createElement('option');
+                        opt.value = opt.text = fontName;
+                        $('globalFont').appendChild(opt);
+                        $('globalFont').value = fontName;
+                    }
+                    draw();
+                } catch (err) { alert('폰트 로드 실패: ' + file.name); }
+            }
+            e.target.value = '';
+        };
+
+        const updateUI = (idx = sel) => {
+            sel = idx;
+            const list = $('layerList');
+            list.innerHTML = layers.length ? '' : '<p style="font-size:12px;text-align:center;color:#777;margin-top:10px;">이미지를 추가하세요.</p>';
+
+            for (let i = layers.length - 1; i >= 0; i--) {
+                const l = layers[i];
+                const div = document.createElement('div');
+                div.className = `layer-item ${i === sel ? 'active' : ''}`;
+                div.draggable = true;
+                
+                div.onclick = e => { if (!['SELECT','BUTTON','INPUT'].includes(e.target.tagName)) updateUI(i); };
+                div.ondragstart = e => { e.dataTransfer.setData('idx', i); setTimeout(() => div.style.opacity = '0.5', 0); };
+                div.ondragend = () => div.style.opacity = '1';
+                div.ondragover = e => { e.preventDefault(); div.classList.add('drag-over'); };
+                div.ondragleave = () => div.classList.remove('drag-over');
+                div.ondrop = e => {
+                    e.preventDefault(); div.classList.remove('drag-over');
+                    const from = parseInt(e.dataTransfer.getData('idx'));
+                    if (from !== i && !isNaN(from)) {
+                        const activeL = layers[sel];
+                        layers.splice(i, 0, layers.splice(from, 1)[0]);
+                        updateUI(layers.indexOf(activeL));
+                    }
+                };
+
+                let colorPickersHTML = '';
+                if(l.text) {
+                    const chars = l.text.split('');
+                    while(l.colors.length < chars.length) l.colors.push('#ffffff');
+                    
+                    colorPickersHTML = `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; padding-top:5px; border-top:1px dashed #E8D8C8;">
+                        ${chars.map((ch, cIdx) => ch === ' ' ? '' : `
+                            <div class="char-color-box">
+                                <span>${ch}</span>
+                                <input type="color" value="${l.colors[cIdx]}" onchange="layers[${i}].colors[${cIdx}]=this.value; draw();" style="width:22px; height:24px;">
+                            </div>
+                        `).join('')}
+                    </div>`;
+                }
+
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-weight:bold; font-size:13px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <img src="${l.src}" class="thumb"> 
+                            <span style="max-width:80px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${l.name}</span>
+                        </div>
+                        <div style="display:flex; gap:3px;">
+                            <button class="l-btn" onclick="move(${i},1,event)">▲</button>
+                            <button class="l-btn" onclick="move(${i},-1,event)">▼</button>
+                            <button class="l-btn del" onclick="del(${i},event)">삭제</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <select onchange="layers[${i}].anim=this.value; updateUI(${i});" style="flex:1;">
+                            ${['fade:페이드인', 'slideLeft:⬅️ 왼 슬라이드', 'slideRight:➡️ 오른 슬라이드', 'slideUp:⬆️ 아래 슬라이드', 'slideDown:⬇️ 위 슬라이드', 'zoomIn:🔍 확대'].map(o => {
+                                const [v, t] = o.split(':'); return `<option value="${v}" ${l.anim===v?'selected':''}>${t}</option>`;
+                            }).join('')}
+                        </select>
+                    </div>
+                    <div class="row" style="margin-top:5px;">
+                        <input type="text" placeholder="텍스트 입력" value="${l.text}" oninput="layers[${i}].text=this.value; draw();" onchange="updateUI(${i});" style="flex:1;">
+                    </div>
+                    ${colorPickersHTML}
+                `;
+                list.appendChild(div);
+            }
+            draw();
+        };
+
+        $('imageInput').onchange = e => {
+            Array.from(e.target.files).forEach(file => {
+                const r = new FileReader();
+                r.onload = ev => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const isEven = layers.length % 2 === 0;
+                        const defaultAnim = isEven ? 'slideLeft' : 'slideRight';
+                        const scale = 0.5;
+                        const scaledW = img.width * scale;
+                        const scaledH = img.height * scale;
+                        const ix = W/2 - scaledW/2;
+                        const iy = H/2 - scaledH/2;
+                        
+                        layers.push({ 
+                            img, src: ev.target.result, name: file.name, 
+                            anim: defaultAnim, 
+                            scale: scale, x: ix, y: iy,
+                            text: '', colors: [],
+                            textX: ix + scaledW/2 - 80, textY: iy + scaledH/2 - 30 
+                        });
+                        updateUI(layers.length - 1);
+                    };
+                    img.src = ev.target.result;
+                };
+                r.readAsDataURL(file);
+            });
+            e.target.value = '';
+        };
+
+        window.move = (i, d, e) => { e.stopPropagation(); const t = i + d; if (t >= 0 && t < layers.length) { [layers[i], layers[t]] = [layers[t], layers[i]]; updateUI(sel === i ? t : (sel === t ? i : sel)); } };
+        window.del = (i, e) => { e.stopPropagation(); layers.splice(i, 1); updateUI(sel === i ? Math.max(0, layers.length - 1) : (sel > i ? sel - 1 : sel)); };
+        
+        window.act = (type) => {
+            if (!layers.length) return;
+            const gap = +$('gap').value || 0, l = layers[sel];
+            
+            if (type === 'crop') {
+                let mX = Infinity, mY = Infinity, xX = -Infinity, xY = -Infinity;
+                ctx.font = getFontStr();
+                const fSize = parseInt($('gFontSize').value) || 60;
+                
+                layers.forEach(ly => { 
+                    const w = ly.img.width * ly.scale;
+                    const h = ly.img.height * ly.scale; 
+                    const textW = ly.text ? ctx.measureText(ly.text).width : 0;
+                    
+                    let minX = Math.min(ly.x, ly.text ? ly.textX : Infinity);
+                    let minY = Math.min(ly.y, ly.text ? ly.textY : Infinity);
+                    let maxX = Math.max(ly.x + w, ly.text ? ly.textX + textW : -Infinity);
+                    let maxY = Math.max(ly.y + h, ly.text ? ly.textY + fSize + 10 : -Infinity);
+                    
+                    if(ly.anim === 'slideLeft') minX -= 70;
+                    if(ly.anim === 'slideRight') maxX += 70;
+                    if(ly.anim === 'slideUp') maxY += 70;
+                    if(ly.anim === 'slideDown') minY -= 70;
+                    
+                    mX = Math.min(mX, minX); mY = Math.min(mY, minY); 
+                    xX = Math.max(xX, maxX); xY = Math.max(xY, maxY); 
+                });
+                
+                if(mX === Infinity) return;
+                
+                const cx = W / 2, cy = H / 2;
+                const newW = Math.max(100, Math.ceil(Math.max(cx - mX, xX - cx) + 10) * 2);
+                const newH = Math.max(100, Math.ceil(Math.max(cy - mY, xY - cy) + 10) * 2);
+                const shiftX = newW / 2 - cx;
+                const shiftY = newH / 2 - cy;
+                
+                W = canvasEl.width = newW; 
+                H = canvasEl.height = newH;
+                
+                layers.forEach(ly => { ly.x += shiftX; ly.y += shiftY; ly.textX += shiftX; ly.textY += shiftY; });
+            }
+            else if (type === 'match' && layers.length > 1 && l) { 
+                const tH = l.img.height * l.scale; 
+                layers.forEach(ly => { 
+                    if(ly !== l) {
+                        const oldSc = ly.scale;
+                        ly.scale = tH / ly.img.height; 
+                        const ratio = ly.scale / oldSc;
+                        ly.textX = ly.x + (ly.textX - ly.x) * ratio;
+                        ly.textY = ly.y + (ly.textY - ly.y) * ratio;
+                    }
+                }); 
+            }
+            else if (type === 'distH' || type === 'distV') {
+                const isH = type === 'distH';
+                const totalSize = layers.reduce((a, ly) => a + ly.img[isH?'width':'height'] * ly.scale, 0) + gap * (layers.length - 1);
+                let cur = ( (isH?W:H) - totalSize ) / 2;
+                
+                layers.forEach(ly => { 
+                    const dx = isH ? cur - ly.x : ((W - ly.img.width*ly.scale)/2) - ly.x;
+                    const dy = isH ? ((H - ly.img.height*ly.scale)/2) - ly.y : cur - ly.y;
+                    ly.x += dx; ly.y += dy; ly.textX += dx; ly.textY += dy;
+                    cur += ly.img[isH?'width':'height']*ly.scale + gap; 
+                });
+            }
+            else if (type === 'quick') { act('match'); act('distV'); act('crop'); }
+            
+            draw();
+        };
+
+        const getPos = e => { const r = canvasEl.getBoundingClientRect(); return { x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height) }; };
+        
+        canvasEl.onwheel = e => { 
+            if(isPlay || !layers[sel]) return; 
+            e.preventDefault(); 
+            const l = layers[sel];
+            const oldSc = l.scale;
+            l.scale = Math.max(0.05, l.scale + (e.deltaY < 0 ? 0.05 : -0.05)); 
+            
+            const ratio = l.scale / oldSc;
+            l.textX = l.x + (l.textX - l.x) * ratio;
+            l.textY = l.y + (l.textY - l.y) * ratio;
+            draw(); 
+        };
+        
+        canvasEl.onmousedown = e => {
+            if (isPlay) return; 
+            const {x, y} = getPos(e), l = layers[sel];
+            const fSize = parseInt($('gFontSize').value) || 60;
+            ctx.textBaseline = 'top';
+            ctx.font = getFontStr();
+            
+            if (l) { 
+                const w = l.img.width*l.scale, h = l.img.height*l.scale; 
+                if (x >= l.x+w-12 && x <= l.x+w+12 && y >= l.y+h-12 && y <= l.y+h+12) return isRes = true; 
+            }
+            
+            for (let i = layers.length - 1; i >= 0; i--) {
+                const ly = layers[i];
+                if(ly.text && x >= ly.textX && x <= ly.textX + ctx.measureText(ly.text).width && y >= ly.textY && y <= ly.textY + fSize + 10) {
+                    isDragText = true; updateUI(i); 
+                    offX = x - ly.textX; offY = y - ly.textY; 
+                    return;
+                }
+            }
+
+            for (let i = layers.length - 1; i >= 0; i--) {
+                const ly = layers[i], w = ly.img.width*ly.scale, h = ly.img.height*ly.scale;
+                if (x >= ly.x && x <= ly.x+w && y >= ly.y && y <= ly.y+h) { 
+                    isDragImg = true; updateUI(i); 
+                    offX = x - ly.x; offY = y - ly.y; 
+                    textRelX = ly.textX - ly.x; textRelY = ly.textY - ly.y; 
+                    return; 
+                }
+            }
+            updateUI(-1);
+        };
+        
+        window.onmousemove = e => {
+            if (isPlay || (!isDragImg && !isDragText && !isRes)) return;
+            const {x, y} = getPos(e), l = layers[sel];
+            
+            if (isRes) {
+                const oldSc = l.scale;
+                l.scale = Math.max(0.05, (x - l.x) / l.img.width); 
+                const ratio = l.scale / oldSc;
+                l.textX = l.x + (l.textX - l.x) * ratio; l.textY = l.y + (l.textY - l.y) * ratio;
+            } else if (isDragText) { 
+                l.textX = x - offX; l.textY = y - offY; 
+            } else if (isDragImg) { 
+                l.x = x - offX; l.y = y - offY; 
+                l.textX = l.x + textRelX; l.textY = l.y + textRelY; 
+            }
+            draw();
+        };
+        
+        window.onmouseup = () => isDragImg = isDragText = isRes = false;
+
+        const render = (c, p) => {
+            const alpha = Math.min(p * 1.5, 1);
+            
+            layers.forEach(l => {
+                let s = l.scale, tX = l.x, tY = l.y, w = l.img.width*s, h = l.img.height*s;
+                let dx = 0, dy = 0; 
+
+                if(l.anim === 'slideLeft') dx = -(1-p)*70; 
+                else if(l.anim === 'slideRight') dx = (1-p)*70;
+                else if(l.anim === 'slideUp') dy = (1-p)*70; 
+                else if(l.anim === 'slideDown') dy = -(1-p)*70;
+                else if(l.anim === 'zoomIn') { s *= 0.7 + p*0.3; dx = -(l.img.width*s - w)/2; dy = -(l.img.height*s - h)/2; }
+                
+                c.globalAlpha = alpha;
+                c.drawImage(l.img, tX + dx, tY + dy, l.img.width*s, l.img.height*s);
+
+                if(l.text) {
+                    c.save();
+                    c.translate(l.textX + dx, l.textY + dy);
+                    if (l.anim === 'zoomIn') { let ts = 0.7 + p * 0.3; c.scale(ts, ts); }
+                    
+                    c.font = getFontStr();
+                    c.textBaseline = 'top';
+                    
+                    if ($('gShadow').checked) { c.shadowColor = 'rgba(0,0,0,0.6)'; c.shadowBlur = 6; }
+                    if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeColor').value; }
+
+                    let chars = l.text.split(''), charW = 0;
+                    chars.forEach((ch, idx) => {
+                        let startP = (idx / Math.max(chars.length, 1)) * 0.5; 
+                        let localAlpha = Math.min(Math.max((p - startP) * 5, 0), 1); 
+                        c.globalAlpha = localAlpha * alpha;
+                        
+                        if(ch !== ' ') {
+                            c.fillStyle = l.colors[idx] || '#ffffff';
+                            if ($('gStroke').checked) c.strokeText(ch, charW, 0); 
+                            c.fillText(ch, charW, 0);   
+                        }
+                        charW += c.measureText(ch).width;
+                    });
+                    c.restore();
+                }
+            });
+            c.globalAlpha = 1.0;
+        };
+
+        const draw = () => {
+            if (isPlay || $('generateBtn').disabled) return;
+            ctx.clearRect(0, 0, W, H);
+            render(ctx, 1); 
+            const l = layers[sel];
+            
+            if (l) {
+                const w = l.img.width*l.scale, h = l.img.height*l.scale;
+                ctx.strokeStyle = ctx.fillStyle = '#0055FF'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
+                ctx.strokeRect(l.x, l.y, w, h); ctx.setLineDash([]); ctx.fillRect(l.x+w-6, l.y+h-6, 12, 12);
+                
+                if(l.text) {
+                    ctx.font = getFontStr();
+                    const fSize = parseInt($('gFontSize').value) || 60;
+                    ctx.strokeRect(l.textX - 2, l.textY - 2, ctx.measureText(l.text).width + 4, fSize + 10);
+                }
+            }
+        };
+
+        const exec = cb => { const t = sel; updateUI(-1); cb(t); };
+        
+        $('previewBtn').onclick = () => {
+            if (!layers.length || isPlay || $('generateBtn').disabled) return;
+            isPlay = true; let f = 0;
+            exec(t => { 
+                const loop = () => { 
+                    if (f >= 30) return setTimeout(() => { isPlay = false; updateUI(t); }, 500); 
+                    ctx.clearRect(0, 0, W, H);
+                    render(ctx, ease(f++ / 29)); setTimeout(loop, 40); 
+                }; 
+                loop(); 
+            });
+        };
+
+        // 파일 내보내기 핵심 로직 (용량 방어 및 잔상 제거 기술 적용)
+        $('generateBtn').onclick = () => {
+            if (!layers.length || isPlay) return alert("이미지를 추가하거나 재생을 멈춰주세요.");
+            
+            const mode = $('quality').value;
+            const isAPNG = mode === 'apng';
+            const isGifWhite = mode === 'gif_white';
+            const isGifTrans = mode === 'gif_trans';
+            
+            let ext = isAPNG ? '.png' : '.gif';
+            let fn = prompt("저장할 파일명:", "ccfolia_cutin")?.trim(); if (!fn) return; 
+            if (!fn.endsWith(ext)) fn += ext;
+            
+            const btn = $('generateBtn'), og = btn.innerText;
+            btn.disabled = $('previewBtn').disabled = true; btn.innerText = "⏳ 인코딩 중...";
+            
+            const tF = 20; // 20프레임 (부드러움과 용량의 황금 비율)
+            const fD = Math.floor(1000 / tF);
+            
+            // 코코포리아 업로드 1MB 용량 컷 자동 방어 계산
+            let sc = 1.0;
+            if (isAPNG) {
+                const maxPixels = 4000000; // 약 1MB 컷을 통과하는 안전 픽셀 임계치
+                const curPixels = W * H * tF;
+                if (curPixels > maxPixels) sc = Math.min(1.0, Math.sqrt(maxPixels / curPixels));
+            }
+            
+            const eW = Math.floor(W * sc);
+            const eH = Math.floor(H * sc);
+            const oCtx = document.createElement('canvas').getContext('2d', { willReadFrequently: true }); 
+            oCtx.canvas.width = eW; oCtx.canvas.height = eH;
+            
+            exec(t => {
+                if (isAPNG) {
+                    // APNG (UPNG.js) 프로세스
+                    const frames = [];
+                    for (let i = 0; i < tF; i++) {
+                        oCtx.save(); oCtx.clearRect(0, 0, eW, eH); oCtx.scale(sc, sc); render(oCtx, ease(i / (tF - 1))); oCtx.restore();
+                        frames.push(oCtx.getImageData(0, 0, eW, eH).data.buffer);
+                    }
+                    setTimeout(() => {
+                        try {
+                            const encoded = UPNG.encode(frames, eW, eH, 256, Array(tF).fill(fD));
+                            const blob = new Blob([encoded], { type: 'image/apng' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
+                            btn.innerText = "🔥 완료!";
+                        } catch (e) { 
+                            btn.innerText = "❌ 오류 발생"; 
+                        } finally { 
+                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t); }, 2000); 
+                        }
+                    }, 100);
+                } else {
+                    // 고해상도 GIF (gif.js) 프로세스
+                    const processGif = async () => {
+                        try {
+                            // 브라우저 CORS 제약을 뚫기 위한 워커 스크립트 Blob 우회 패치
+                            let workerUrl = gifWorkerUrl;
+                            if (!workerUrl) {
+                                const res = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
+                                const text = await res.text();
+                                const blob = new Blob([text], { type: 'application/javascript' });
+                                workerUrl = gifWorkerUrl = URL.createObjectURL(blob);
+                            }
+                            
+                            const gif = new GIF({
+                                workers: 2,
+                                quality: 10,
+                                workerScript: workerUrl,
+                                transparent: isGifTrans ? '#FE00FE' : null, // 마젠타 크로마키 투명화
+                                background: isGifWhite ? '#FFFFFF' : '#FE00FE'
+                            });
+                            
+                            for (let i = 0; i < tF; i++) {
+                                oCtx.save();
+                                oCtx.clearRect(0, 0, eW, eH);
+                                
+                                // 잔상을 막기 위해 매 프레임마다 빈 공간을 강제 페인팅
+                                if (isGifWhite) {
+                                    oCtx.fillStyle = '#FFFFFF';
+                                    oCtx.fillRect(0, 0, eW, eH);
+                                } else if (isGifTrans) {
+                                    oCtx.fillStyle = '#FE00FE'; 
+                                    oCtx.fillRect(0, 0, eW, eH);
+                                }
+                                
+                                oCtx.scale(sc, sc); 
+                                render(oCtx, ease(i / (tF - 1))); 
+                                oCtx.restore();
+                                
+                                // 투명 배경 시 1-bit 깔끔한 테두리 강제 치환 로직 (잔상 및 찌꺼기 제거)
+                                if (isGifTrans) {
+                                    const imgData = oCtx.getImageData(0, 0, eW, eH);
+                                    const data = imgData.data;
+                                    for (let j = 0; j < data.length; j += 4) {
+                                        if (data[j+3] < 128) {
+                                            data[j] = 254; data[j+1] = 0; data[j+2] = 254; data[j+3] = 255; // 크로마키 마젠타
+                                        } else {
+                                            // 혹시라도 원래 이미지에 있는 픽셀이 뚫리는 것을 방지
+                                            if (data[j] === 254 && data[j+1] === 0 && data[j+2] === 254) data[j] = 255;
+                                            data[j+3] = 255;
+                                        }
+                                    }
+                                    oCtx.putImageData(imgData, 0, 0);
+                                }
+                                
+                                gif.addFrame(oCtx, {copy: true, delay: fD});
+                            }
+                            
+                            gif.on('finished', function(blob) {
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
+                                btn.innerText = "🔥 완료!";
+                                setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t); }, 2000);
+                            });
+                            
+                            gif.render();
+                        } catch (e) {
+                            btn.innerText = "❌ 오류 발생";
+                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t); }, 2000);
+                        }
+                    };
+                    processGif();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
