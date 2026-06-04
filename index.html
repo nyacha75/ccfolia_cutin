@@ -9,40 +9,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
     
     <style>
-        /* 기본 스타일 */
         body { font-family: 'Malgun Gothic', sans-serif; background: #fff; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow-x: hidden; }
-        
         .container { display: flex; gap: 15px; width: 100%; justify-content: center; align-items: flex-start; }
         
-        /* 캔버스 및 좌측 영역 */
         .canvas-wrapper { display: flex; flex-direction: column; width: fit-content; max-width: 100%; }
-        canvas { 
-            border: 2px solid #0055FF; border-radius: 4px; background: #fff; 
-            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%); 
-            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; 
-        }
+        canvas { border: 2px solid #0055FF; border-radius: 4px; background: #fff; background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
         .hint-box { font-size: 12px; color: #555; line-height: 1.6; margin-top: 10px; background: #FCFAF7; padding: 15px; border-radius: 4px; border: 1px solid #E8D8C8; box-sizing: border-box; }
         .hint-box span { color: #0055FF; font-weight: bold; }
         
-        /* 컨트롤 패널 */
         .control-panel { width: 440px; display: flex; flex-direction: column; gap: 15px; position: sticky; top: 20px; background: #FCFAF7; padding: 20px; border-radius: 8px; border: 2px solid #E8D8C8; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-height: 90vh; overflow-y: auto; flex-shrink: 0; }
         .control-group { border-bottom: 1px solid #E8D8C8; padding-bottom: 15px; }
         .control-group:last-child { border-bottom: none; padding-bottom: 0; }
         .control-group h3 { margin: 0 0 10px 0; font-size: 15px; color: #0055FF; }
         
-        /* 입력 요소 스타일 */
-        input, select { background: #fff; border: 1px solid #E8D8C8; padding: 7px; border-radius: 4px; box-sizing: border-box; color: #333; font-size: 12px; }
-        input:focus, select:focus { outline: none; border-color: #0055FF; }
+        input, select { background: #fff; border: 1px solid #E8D8C8; padding: 7px; border-radius: 4px; box-sizing: border-box; color: #333; font-size: 12px; outline: none; }
+        input:focus, select:focus { border-color: #0055FF; }
         input[type="checkbox"] { cursor: pointer; vertical-align: middle; margin: 0; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; text-align: center; }
 
-        /* 컬러 피커 컴팩트 UI */
         .color-combo { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 3px; background: #fff; height: 22px; width: fit-content; overflow: hidden; transition: 0.2s; }
         .color-combo input[type="color"] { width: 22px; height: 22px; border: none; padding: 0; margin: 0; cursor: pointer; background: transparent; }
         .color-combo input[type="text"] { width: 55px; border: none; font-size: 11px; text-transform: uppercase; font-family: monospace; text-align: center; outline: none; padding: 0; }
         
-        /* 버튼 및 레이아웃 */
         .row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
         .btn { background: #fff; color: #333; border: 1px solid #E8D8C8; flex: 1; padding: 8px 6px; font-size: 12px; cursor: pointer; border-radius: 4px; transition: 0.2s; text-align: center; }
         .btn:hover { background: #F2E8DA; }
@@ -51,7 +40,6 @@
         .btn.magic { background: #0055FF; color: #fff; border-color: #0044CC; font-weight: bold; font-size: 13px; padding: 10px; }
         .btn.magic:hover { background: #0044CC; }
         
-        /* 레이어 리스트 */
         .layer-list { max-height: 220px; overflow-y: auto; background: #fff; border: 1px solid #E8D8C8; border-radius: 4px; padding: 5px; }
         .layer-item { background: #FCFAF7; margin-bottom: 5px; padding: 10px; border-radius: 4px; border: 1px solid #E8D8C8; cursor: grab; }
         .layer-item.active { border-color: #0055FF; background: #F0F4FF; }
@@ -63,13 +51,11 @@
         .char-color-box span { font-size: 11px; font-weight: bold; color: #555; }
         .fx-label { display: flex; align-items: center; gap: 3px; white-space: nowrap; cursor: pointer; font-size: 11px; }
 
-        /* 하단 액션 버튼 */
         .action-btn { border: none; padding: 14px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 14px; color: #fff; }
         #previewBtn { background: #E8D8C8; color: #333; border: 1px solid #DBC4AC; } 
         #generateBtn { background: #0055FF; }
         button:disabled { background: #ccc !important; cursor: not-allowed; color: #888 !important; }
         
-        /* 스크롤바 */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -81,8 +67,7 @@
     <div style="visibility: hidden; position: absolute; font-family: 'Nanum Myeongjo';">.</div>
 
     <div id="mainHeader" style="width: 1055px; max-width: 100%; margin-bottom: 20px; transition: width 0.2s ease; text-align: center;">
-        <h2 style="margin: 0 auto 15px auto; background: #0055FF; color: #fff; font-family: 'Black Han Sans', sans-serif; font-weight: 400; padding: 10px 40px; border-radius: 4px; display: inline-block; font-size: 26px; letter-spacing: 1px;">🌊 [쏘랑] 다인 컷인 에디터</h2>
-        <hr style="border: 0; border-top: 2px solid #0055FF; margin: 0;">
+        <h2 style="margin: 0 auto; background: #0055FF; color: #fff; font-family: 'Black Han Sans', sans-serif; font-weight: 400; padding: 10px 40px; border-radius: 4px; display: inline-block; font-size: 26px; letter-spacing: 1px;">🌊 [쏘랑] 다인 컷인 에디터</h2>
     </div>
 
     <div class="container">
@@ -90,7 +75,7 @@
             <canvas id="canvas" width="600" height="800"></canvas>
             <div class="hint-box">
                 • <span>마우스 드래그</span>: 이동 (텍스트/이미지 이동) | <span>휠</span>: 크기 조절<br>
-                • <span>[간단 배치]</span>: 이미지 비율(가로/세로형)을 자동 판별하여 최적의 배열로 한 번에 정렬합니다.
+                • <span>[간단 배치]</span>: 이미지 비율(가로/세로형)을 자동 판별하여 최적의 배열로 정렬합니다.
             </div>
             
             <div style="background:#F0F4FF; border:1px solid #0055FF; padding:15px; border-radius:6px; margin-top:10px;">
@@ -104,8 +89,8 @@
                     <input type="file" id="projectFileInput" accept=".json" style="display:none;" onchange="loadProjectFile(event)">
                 </div>
                 <div style="font-size:12px; color:#555; margin-top:10px; line-height:1.5;">
-                    • 모든 작업 내용은 브라우저 내부에 <b>실시간 자동 보존</b>됩니다.<br>
-                    • 브라우저 캐시 초기화 시 데이터가 날아갈 수 있으므로 중요한 작업은 <b>프로젝트 파일로 저장</b>하세요.
+                    • 작업 내용은 브라우저 내부에 <b>실시간 자동 보존</b>됩니다.<br>
+                    • 브라우저 캐시 초기화 시 데이터가 삭제될 수 있으므로 중요 작업은 <b>프로젝트 파일로 저장</b>하세요.
                 </div>
             </div>
         </div>
@@ -134,7 +119,6 @@
                         <button class="btn hl" onclick="act('matchH')">📏 세로 통일</button>
                         <button class="btn hl" onclick="act('matchW')">📏 가로 통일</button>
                         <button class="btn hl" onclick="act('crop')">✂️ 캔버스 맞추기</button>
-                        
                         <button class="btn" onclick="act('distH')">↔️ 가로 간격 정렬</button>
                         <button class="btn" onclick="act('distV')">↕️ 세로 간격 정렬</button>
                         <div style="display:flex; justify-content:center; align-items:center; background:#fff; border:1px solid #E8D8C8; border-radius:4px; height: 32px;">
@@ -168,10 +152,10 @@
                     <label style="font-size:12px; width:95px; white-space:nowrap;">추가 효과:</label>
                     <select id="globalEffect" onchange="draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
                         <option value="none" selected>효과 없음</option>
-                        <option value="trace">1. 각 이미지 테두리 빛 궤적 (진행 중)</option>
-                        <option value="lines">2. 상하 교차 빛나는 선 (진행 중)</option>
-                        <option value="flash">3. 애니메이션 종료 후 한 번 번쩍</option>
-                        <option value="trace_after">4. 종료 후 이미지 테두리 빛 궤적</option>
+                        <option value="lines">1. 교차 빛나는 선</option>
+                        <option value="trace">2. 이미지 테두리 빛 궤적</option>
+                        <option value="trace_after">3. 애니메이션 종료 후 이미지 테두리 빛 궤적</option>
+                        <option value="flash">4. 애니메이션 종료 후 번쩍</option>
                     </select>
                 </div>
             </div>
@@ -251,7 +235,6 @@
                             <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgHex').value='#2b2b2b'; $('gifBgColor').value='#2b2b2b'; } else { $('gifBgHex').value='#ffffff'; $('gifBgColor').value='#ffffff'; } draw(); triggerAutoSave();">
                             코코포
                         </label>
-                        
                     </div>
                 </div>
             </div>
@@ -379,7 +362,7 @@
             } catch(e) {}
         });
 
-        // --- 메인 로직 ---
+        // --- UI & Rendering ---
         $('fontInput').onchange = async e => {
             for (let file of e.target.files) {
                 try {
@@ -521,6 +504,16 @@
             let pRaw = Math.min(1, t / dur), p = ease(pRaw), postP = Math.max(0, (t - dur) / 2000), eff = $('globalEffect').value;
             const alpha = Math.min(p * 1.5, 1);
             
+            // 이미지 배치 방향 확인 (가로형 vs 세로형)
+            let isHorizLayout = false;
+            if (layers.length > 1) {
+                let dx = Math.abs(layers[layers.length-1].x - layers[0].x);
+                let dy = Math.abs(layers[layers.length-1].y - layers[0].y);
+                isHorizLayout = dx > dy;
+            } else if (layers.length === 1) {
+                isHorizLayout = layers[0].img.width * layers[0].scale < layers[0].img.height * layers[0].scale;
+            }
+            
             c.imageSmoothingEnabled = true;
             c.imageSmoothingQuality = "high";
             
@@ -537,14 +530,39 @@
                     c.setLineDash([perim * 0.15, perim * 0.85]); c.lineDashOffset = -perim * pRaw * 2; c.strokeRect(tX + dx, tY + dy, w, h); c.restore();
                 }
                 
-                // --- 효과: 상하 교차 빛 (가로폭 완벽 클리핑) ---
+                // --- 효과: 교차 빛나는 선 (방향 자동 전환 & 클리핑) ---
                 if (eff === 'lines' && pRaw < 1) {
-                    let lineW = w * 0.8, headX = tX + dx + (w + lineW) * pRaw - lineW; 
-                    c.save(); c.beginPath(); c.rect(tX + dx, tY + dy - 2, w, h + 4); c.clip();
-                    let gradTop = c.createLinearGradient(headX, 0, headX + lineW, 0); 
-                    gradTop.addColorStop(1, 'rgba(255,255,255,1)'); gradTop.addColorStop(0, 'rgba(255,255,255,0)'); c.fillStyle = gradTop; c.fillRect(headX, tY + dy, lineW, 3);
-                    let headXBot = tX + dx + w - (w + lineW) * pRaw + lineW, gradBot = c.createLinearGradient(headXBot - lineW, 0, headXBot, 0); 
-                    gradBot.addColorStop(0, 'rgba(255,255,255,1)'); gradBot.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = gradBot; c.fillRect(headXBot - lineW, tY + dy + h - 3, lineW, 3); c.restore();
+                    c.save(); 
+                    c.beginPath(); 
+                    c.rect(tX + dx - 2, tY + dy - 2, w + 4, h + 4); 
+                    c.clip();
+                    
+                    if (isHorizLayout) {
+                        // 좌우 교차 (상하 이동)
+                        let lineH = h * 0.8;
+                        let headY = tY + dy + (h + lineH) * pRaw - lineH; 
+                        let gradLeft = c.createLinearGradient(0, headY, 0, headY + lineH); 
+                        gradLeft.addColorStop(1, 'rgba(255,255,255,1)'); gradLeft.addColorStop(0, 'rgba(255,255,255,0)'); 
+                        c.fillStyle = gradLeft; c.fillRect(tX + dx, headY, 3, lineH);
+                        
+                        let headYRight = tY + dy + h - (h + lineH) * pRaw + lineH; 
+                        let gradRight = c.createLinearGradient(0, headYRight - lineH, 0, headYRight); 
+                        gradRight.addColorStop(0, 'rgba(255,255,255,1)'); gradRight.addColorStop(1, 'rgba(255,255,255,0)'); 
+                        c.fillStyle = gradRight; c.fillRect(tX + dx + w - 3, headYRight - lineH, 3, lineH);
+                    } else {
+                        // 상하 교차 (좌우 이동)
+                        let lineW = w * 0.8;
+                        let headX = tX + dx + (w + lineW) * pRaw - lineW; 
+                        let gradTop = c.createLinearGradient(headX, 0, headX + lineW, 0); 
+                        gradTop.addColorStop(1, 'rgba(255,255,255,1)'); gradTop.addColorStop(0, 'rgba(255,255,255,0)'); 
+                        c.fillStyle = gradTop; c.fillRect(headX, tY + dy, lineW, 3);
+                        
+                        let headXBot = tX + dx + w - (w + lineW) * pRaw + lineW; 
+                        let gradBot = c.createLinearGradient(headXBot - lineW, 0, headXBot, 0); 
+                        gradBot.addColorStop(0, 'rgba(255,255,255,1)'); gradBot.addColorStop(1, 'rgba(255,255,255,0)'); 
+                        c.fillStyle = gradBot; c.fillRect(headXBot - lineW, tY + dy + h - 3, lineW, 3);
+                    }
+                    c.restore();
                 }
 
                 // --- 효과: 테두리 빛 궤적 (종료 후) ---
@@ -574,7 +592,12 @@
             });
             
             // --- 효과: 전체 화면 번쩍 (종료 후) ---
-            if (eff === 'flash' && pRaw >= 1 && postP < 1) { let flashA = Math.max(0, 1 - postP * 4); if (flashA > 0) { c.save(); c.fillStyle = `rgba(255, 255, 255, ${flashA})`; c.fillRect(0, 0, W, H); c.restore(); } }
+            if (eff === 'flash' && pRaw >= 1 && postP < 1) { 
+                let flashA = Math.max(0, 1 - postP * 4); 
+                if (flashA > 0) { 
+                    c.save(); c.fillStyle = `rgba(255, 255, 255, ${flashA})`; c.fillRect(0, 0, W, H); c.restore(); 
+                } 
+            }
             c.globalAlpha = 1.0;
         };
 
