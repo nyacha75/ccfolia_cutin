@@ -5,7 +5,7 @@
     <title>🌊 다인 컷인 에디터</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/upng-js@2.1.0/UPNG.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gif.js.optimized@1.0.1/dist/gif.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Jua&family=Nanum+Myeongjo:wght@700&display=swap" rel="stylesheet">
     
     <style>
@@ -151,9 +151,9 @@
             <div class="control-group">
                 <h3>5. 출력 파일 형식</h3>
                 <select id="quality" style="width: 100%; font-size: 12px;">
-                    <option value="apng" selected>APNG (코코포리아 1MB 자동 최적화 방어)</option>
-                    <option value="gif_white">GIF - 흰색 배경 (잔상 완벽 제거)</option>
-                    <option value="gif_trans">GIF - 투명 배경 (잔상 완벽 제거)</option>
+                    <option value="apng" selected>APNG</option>
+                    <option value="gif">GIF</option>
+                    <option value="gif_white">GIF(흰 배경)</option>
                 </select>
             </div>
             
@@ -533,7 +533,7 @@
             const mode = $('quality').value;
             const isAPNG = mode === 'apng';
             const isGifWhite = mode === 'gif_white';
-            const isGifTrans = mode === 'gif_trans';
+            const isGifTrans = mode === 'gif';
             
             let ext = isAPNG ? '.png' : '.gif';
             let fn = prompt("저장할 파일명:", "ccfolia_cutin")?.trim(); if (!fn) return; 
@@ -545,10 +545,10 @@
             const tF = 20; // 20프레임 (부드러움과 용량의 황금 비율)
             const fD = Math.floor(1000 / tF);
             
-            // 코코포리아 업로드 1MB 용량 컷 자동 방어 계산
+            // 코코포리아 1MB 용량 컷 자동 방어 계산
             let sc = 1.0;
             if (isAPNG) {
-                const maxPixels = 4000000; // 약 1MB 컷을 통과하는 안전 픽셀 임계치
+                const maxPixels = 4000000; 
                 const curPixels = W * H * tF;
                 if (curPixels > maxPixels) sc = Math.min(1.0, Math.sqrt(maxPixels / curPixels));
             }
@@ -583,10 +583,11 @@
                     // 고해상도 GIF (gif.js) 프로세스
                     const processGif = async () => {
                         try {
-                            // 브라우저 CORS 제약을 뚫기 위한 워커 스크립트 Blob 우회 패치
                             let workerUrl = gifWorkerUrl;
                             if (!workerUrl) {
-                                const res = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
+                                // jsDelivr를 통한 안정적인 워커 로드
+                                const res = await fetch('https://cdn.jsdelivr.net/npm/gif.js.optimized@1.0.1/dist/gif.worker.js');
+                                if(!res.ok) throw new Error("워커 다운로드 실패");
                                 const text = await res.text();
                                 const blob = new Blob([text], { type: 'application/javascript' });
                                 workerUrl = gifWorkerUrl = URL.createObjectURL(blob);
@@ -617,15 +618,14 @@
                                 render(oCtx, ease(i / (tF - 1))); 
                                 oCtx.restore();
                                 
-                                // 투명 배경 시 1-bit 깔끔한 테두리 강제 치환 로직 (잔상 및 찌꺼기 제거)
+                                // 투명 배경 시 1-bit 깔끔한 테두리 강제 치환 로직
                                 if (isGifTrans) {
                                     const imgData = oCtx.getImageData(0, 0, eW, eH);
                                     const data = imgData.data;
                                     for (let j = 0; j < data.length; j += 4) {
                                         if (data[j+3] < 128) {
-                                            data[j] = 254; data[j+1] = 0; data[j+2] = 254; data[j+3] = 255; // 크로마키 마젠타
+                                            data[j] = 254; data[j+1] = 0; data[j+2] = 254; data[j+3] = 255; 
                                         } else {
-                                            // 혹시라도 원래 이미지에 있는 픽셀이 뚫리는 것을 방지
                                             if (data[j] === 254 && data[j+1] === 0 && data[j+2] === 254) data[j] = 255;
                                             data[j+3] = 255;
                                         }
@@ -646,6 +646,7 @@
                             gif.render();
                         } catch (e) {
                             btn.innerText = "❌ 오류 발생";
+                            alert("GIF 생성 중 오류가 발생했습니다.\n로컬 환경(file://)에서 더블클릭으로 실행 중이시라면 브라우저 보안 정책에 의해 차단되었을 수 있습니다.\n\n해결 방법: GitHub Pages 등에 올려서 사용하시거나, APNG 형식을 선택해주세요.");
                             setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t); }, 2000);
                         }
                     };
