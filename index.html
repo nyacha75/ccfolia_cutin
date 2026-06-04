@@ -25,7 +25,7 @@
         .hint-box span { color: #0055FF; font-weight: bold; }
         
         /* 컨트롤 패널 */
-        .control-panel { width: 420px; display: flex; flex-direction: column; gap: 15px; position: sticky; top: 20px; background: #FCFAF7; padding: 20px; border-radius: 8px; border: 2px solid #E8D8C8; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-height: 90vh; overflow-y: auto; }
+        .control-panel { width: 440px; display: flex; flex-direction: column; gap: 15px; position: sticky; top: 20px; background: #FCFAF7; padding: 20px; border-radius: 8px; border: 2px solid #E8D8C8; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-height: 90vh; overflow-y: auto; }
         .control-group { border-bottom: 1px solid #E8D8C8; padding-bottom: 15px; }
         .control-group:last-child { border-bottom: none; padding-bottom: 0; }
         .control-group h3 { margin: 0 0 10px 0; font-size: 15px; color: #0055FF; }
@@ -37,6 +37,7 @@
         input[type="checkbox"] { cursor: pointer; vertical-align: middle; margin: 0; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; text-align: center; }
+        .hex-input { font-family: monospace; font-size: 11px; width: 55px; text-align: center; border: 1px solid #ccc; border-radius: 2px; padding: 2px; text-transform: uppercase; box-sizing: border-box; }
 
         /* 버튼 및 레이아웃 */
         .row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
@@ -57,8 +58,6 @@
         .l-btn.del { background: #ff4d4d; color: #fff; border: none; font-size: 11px; }
         .char-color-box { display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .char-color-box span { font-size: 11px; font-weight: bold; color: #555; }
-        
-        /* 효과 텍스트 레이블 정렬 */
         .fx-label { display: flex; align-items: center; gap: 3px; white-space: nowrap; cursor: pointer; }
 
         /* 하단 액션 버튼 */
@@ -83,9 +82,8 @@
         <div class="canvas-wrapper">
             <canvas id="canvas" width="600" height="800"></canvas>
             <div class="hint-box">
-                • <span>마우스 드래그</span>: 이동 (텍스트 드래그 시 텍스트만, 이미지 드래그 시 텍스트도 함께 이동) | <span>휠</span>: 크기 조절<br>
-                • <span>[세로 통일]</span>: 선택한 레이어의 세로 길이에 맞춰 나머지 이미지 크기 통일.<br>
-                • <span>[간단 배치]</span>: [세로 통일] → [세로 간격 정렬] → [캔버스 자르기] 원클릭 처리.
+                • <span>마우스 드래그</span>: 이동 (텍스트/이미지 이동) | <span>휠</span>: 크기 조절<br>
+                • <span>[간단 배치]</span>: [세로 통일] → [세로 간격 정렬] → [캔버스 맞추기] 원클릭 처리.
             </div>
         </div>
         
@@ -102,21 +100,31 @@
                 <h3>2. 캔버스 조절 및 이미지 정렬</h3>
                 <div class="row"><button class="btn magic" onclick="act('quick')">✨ 간단 배치 (자동 정렬)</button></div>
                 <div class="row">
-                    <button class="btn hl" onclick="act('match')">📏 세로 통일</button>
-                    <button class="btn hl" onclick="act('crop')">✂️ 캔버스 자르기</button>
+                    <button class="btn hl" onclick="act('matchH')">📏 세로 통일</button>
+                    <button class="btn hl" onclick="act('matchW')">📏 가로 통일</button>
+                    <button class="btn hl" onclick="act('crop')">✂️ 캔버스 맞추기</button>
                 </div>
                 <div class="row">
                     <button class="btn" onclick="act('distH')">↔️ 가로 간격 정렬</button>
                     <button class="btn" onclick="act('distV')">↕️ 세로 간격 정렬</button>
-                </div>
-                <div class="row" style="font-size: 12px; margin-top: 8px; justify-content: flex-start; gap: 10px;">
-                    <label>사이 간격(px):</label>
-                    <input type="number" id="gap" value="20" style="width:70px;">
+                    <div style="display:flex; align-items:center; font-size:11px; margin-left:3px; background:#fff; border:1px solid #E8D8C8; border-radius:4px; padding:0 5px;">
+                        간격: <input type="number" id="gap" value="20" style="width:30px; border:none; background:transparent; padding:4px 0; font-size:11px;">px
+                    </div>
                 </div>
             </div>
             
             <div class="control-group" style="flex:1; display:flex; flex-direction:column;">
-                <h3>3. 레이어</h3>
+                <h3>3. 레이어 & 애니메이션 설정</h3>
+                <div class="row" style="margin-bottom:8px;">
+                    <label style="font-size:12px; font-weight:bold; width:65px;">전체 속도:</label>
+                    <select id="animSpeed" onchange="toggleCustomSpeed()" style="flex:1; font-size:11px;">
+                        <option value="1000">빠르게</option>
+                        <option value="2000" selected>기본 (느리게)</option>
+                        <option value="3000">더 느리게</option>
+                        <option value="custom">직접 조정</option>
+                    </select>
+                    <input type="number" id="customSpeed" value="2000" style="display:none; width:55px; font-size:11px; margin-left:4px;" title="1초 = 1000">
+                </div>
                 <div id="layerList" class="layer-list"></div>
             </div>
             
@@ -138,25 +146,43 @@
                         <input type="number" id="gFontSize" value="60" onchange="draw()" style="width:45px; margin-left:4px;">
                     </label>
                 </div>
-                <div class="row" style="font-size:11px; gap: 6px; justify-content: space-between; margin-top: 8px;">
+                <div class="row" style="font-size:11px; gap: 4px; justify-content: space-between; margin-top: 8px;">
                     <label class="fx-label"><input type="checkbox" id="gBold" onchange="draw()"> 굵게</label>
                     <label class="fx-label"><input type="checkbox" id="gItalic" checked onchange="draw()"> 기울임</label>
                     <label class="fx-label"><input type="checkbox" id="gShadow" checked onchange="draw()"> 그림자</label>
                     <label class="fx-label"><input type="checkbox" id="gStroke" checked onchange="draw()"> 테두리</label>
-                    <input type="color" id="gStrokeColor" value="#000000" onchange="draw()" style="width:20px; height:20px; flex-shrink:0;" title="테두리 색상">
-                    <label class="fx-label">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw()" style="width:28px; margin-left:2px; height:22px;"></label>
+                    <input type="color" id="gStrokeColor" value="#000000" oninput="$('gStrokeHex').value=this.value; draw()" style="width:20px; height:20px; flex-shrink:0; padding:0; border:1px solid #ccc; cursor:pointer;" title="테두리 색상">
+                    <input type="text" id="gStrokeHex" class="hex-input" value="#000000" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { $('gStrokeColor').value=this.value; draw(); }">
+                    <label class="fx-label" style="margin-left:2px;">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw()" style="width:28px; margin-left:2px; height:22px;"></label>
+                </div>
+                <div class="row" style="font-size:11px; justify-content: space-between; margin-top: 5px; background: #f5f5f5; padding: 5px; border-radius: 4px; border: 1px solid #E8D8C8;">
+                    <label class="fx-label" style="font-weight:bold; color:#0055FF;"><input type="checkbox" id="gVertical" onchange="draw()">세로 쓰기 적용</label>
+                    <label class="fx-label">타이핑 등장 속도:
+                        <select id="typeSpeed" onchange="draw()" style="margin-left:3px; padding:2px; font-size:11px;">
+                            <option value="0.2">빠르게</option>
+                            <option value="0.5" selected>기본</option>
+                            <option value="0.8">느리게</option>
+                        </select>
+                    </label>
                 </div>
             </div>
 
             <div class="control-group">
                 <h3>5. 출력 파일 형식</h3>
-                <div class="row">
-                    <select id="quality" onchange="toggleBgColor()" style="flex:1; font-size: 12px;">
-                        <option value="apng" selected>APNG</option>
-                        <option value="gif">GIF</option>
-                        <option value="gif_bg">GIF(배경O)</option>
-                    </select>
-                    <input type="color" id="gifBgColor" value="#ffffff" style="display:none; width:26px; height:26px; margin-left:5px;" title="배경색 선택">
+                <select id="quality" onchange="toggleBgColor()" style="width: 100%; font-size: 12px;">
+                    <option value="apng" selected>APNG (화질 가장 깨끗함)</option>
+                    <option value="gif">GIF (투명 배경)</option>
+                    <option value="gif_bg">GIF (배경O)</option>
+                </select>
+                
+                <div id="bgOptionWrapper" class="row" style="display:none; margin-top:5px; padding: 6px; background: #f5f5f5; border-radius: 4px; border: 1px solid #E8D8C8;">
+                    <label style="font-size:11px; margin-right:3px; font-weight:bold;">배경색:</label>
+                    <input type="color" id="gifBgColor" value="#ffffff" oninput="$('gifBgHex').value=this.value; $('ccfoliaBgCheck').checked=false;" style="width:22px; height:22px; padding:0; border:1px solid #ccc; cursor:pointer;">
+                    <input type="text" id="gifBgHex" class="hex-input" value="#ffffff" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { $('gifBgColor').value=this.value; $('ccfoliaBgCheck').checked=false; }">
+                    <label style="font-size:11px; display:flex; align-items:center; margin-left:auto; cursor:pointer; color:#0055FF; font-weight:bold;">
+                        <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgColor').value='#2b2b2b'; $('gifBgHex').value='#2b2b2b'; } else { $('gifBgColor').value='#ffffff'; $('gifBgHex').value='#ffffff'; }">
+                        코코포 배경
+                    </label>
                 </div>
             </div>
             
@@ -180,9 +206,17 @@
         
         const ease = t => 1 - Math.pow(1 - t, 3);
 
-        // 출력 형식에서 GIF(배경O) 선택 시 배경색 피커를 보여주는 함수
         window.toggleBgColor = () => {
-            $('gifBgColor').style.display = $('quality').value === 'gif_bg' ? 'block' : 'none';
+            $('bgOptionWrapper').style.display = $('quality').value === 'gif_bg' ? 'flex' : 'none';
+        };
+
+        window.toggleCustomSpeed = () => {
+            $('customSpeed').style.display = $('animSpeed').value === 'custom' ? 'block' : 'none';
+        };
+
+        const getDuration = () => {
+            let v = $('animSpeed').value;
+            return v === 'custom' ? (parseInt($('customSpeed').value) || 2000) : parseInt(v);
         };
         
         const getFontStr = () => {
@@ -190,6 +224,20 @@
             const isBold = $('gBold').checked ? 'bold ' : '';
             const fSize = parseInt($('gFontSize').value) || 60;
             return `${isItalic}${isBold}${fSize}px "${$('globalFont').value}"`;
+        };
+
+        // 텍스트 Bounding Box 동적 계산 헬퍼 (세로쓰기 대응)
+        const getTextBounds = (text, fSize) => {
+            if (!text) return { w: 0, h: 0 };
+            ctx.font = getFontStr();
+            if ($('gVertical').checked) {
+                let w = 0;
+                let chars = text.split('');
+                chars.forEach(c => w = Math.max(w, ctx.measureText(c).width));
+                return { w: w + 4, h: chars.length * (fSize * 1.1) + 4 };
+            } else {
+                return { w: ctx.measureText(text).width + 4, h: fSize + 10 };
+            }
         };
 
         $('fontInput').onchange = async e => {
@@ -244,11 +292,12 @@
                     const chars = l.text.split('');
                     while(l.colors.length < chars.length) l.colors.push('#ffffff');
                     
-                    colorPickersHTML = `<div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; padding-top:5px; border-top:1px dashed #E8D8C8;">
+                    colorPickersHTML = `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; padding-top:5px; border-top:1px dashed #E8D8C8;">
                         ${chars.map((ch, cIdx) => ch === ' ' ? '' : `
                             <div class="char-color-box">
                                 <span>${ch}</span>
-                                <input type="color" value="${l.colors[cIdx]}" onchange="layers[${i}].colors[${cIdx}]=this.value; draw();" style="width:22px; height:24px;">
+                                <input type="color" value="${l.colors[cIdx]}" oninput="this.nextElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw();" style="width:22px; height:22px; padding:0; border:1px solid #ccc; border-radius:2px; cursor:pointer;">
+                                <input type="text" class="hex-input" value="${l.colors[cIdx]}" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { this.previousElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); }" style="width:45px; font-size:10px; margin-top:3px; padding:1px;">
                             </div>
                         `).join('')}
                     </div>`;
@@ -322,18 +371,17 @@
             
             if (type === 'crop') {
                 let mX = Infinity, mY = Infinity, xX = -Infinity, xY = -Infinity;
-                ctx.font = getFontStr();
                 const fSize = parseInt($('gFontSize').value) || 60;
                 
                 layers.forEach(ly => { 
                     const w = ly.img.width * ly.scale;
                     const h = ly.img.height * ly.scale; 
-                    const textW = ly.text ? ctx.measureText(ly.text).width : 0;
+                    const bounds = getTextBounds(ly.text, fSize);
                     
                     let minX = Math.min(ly.x, ly.text ? ly.textX : Infinity);
                     let minY = Math.min(ly.y, ly.text ? ly.textY : Infinity);
-                    let maxX = Math.max(ly.x + w, ly.text ? ly.textX + textW : -Infinity);
-                    let maxY = Math.max(ly.y + h, ly.text ? ly.textY + fSize + 10 : -Infinity);
+                    let maxX = Math.max(ly.x + w, ly.text ? ly.textX + bounds.w : -Infinity);
+                    let maxY = Math.max(ly.y + h, ly.text ? ly.textY + bounds.h : -Infinity);
                     
                     if(ly.anim === 'slideLeft') minX -= 70;
                     if(ly.anim === 'slideRight') maxX += 70;
@@ -357,15 +405,21 @@
                 
                 layers.forEach(ly => { ly.x += shiftX; ly.y += shiftY; ly.textX += shiftX; ly.textY += shiftY; });
             }
-            else if (type === 'match' && layers.length > 1 && l) { 
+            else if (type === 'matchH' && layers.length > 1 && l) { 
                 const tH = l.img.height * l.scale; 
                 layers.forEach(ly => { 
                     if(ly !== l) {
-                        const oldSc = ly.scale;
-                        ly.scale = tH / ly.img.height; 
-                        const ratio = ly.scale / oldSc;
-                        ly.textX = ly.x + (ly.textX - ly.x) * ratio;
-                        ly.textY = ly.y + (ly.textY - ly.y) * ratio;
+                        const oldSc = ly.scale; ly.scale = tH / ly.img.height; 
+                        const ratio = ly.scale / oldSc; ly.textX = ly.x + (ly.textX - ly.x) * ratio; ly.textY = ly.y + (ly.textY - ly.y) * ratio;
+                    }
+                }); 
+            }
+            else if (type === 'matchW' && layers.length > 1 && l) { 
+                const tW = l.img.width * l.scale; 
+                layers.forEach(ly => { 
+                    if(ly !== l) {
+                        const oldSc = ly.scale; ly.scale = tW / ly.img.width; 
+                        const ratio = ly.scale / oldSc; ly.textX = ly.x + (ly.textX - ly.x) * ratio; ly.textY = ly.y + (ly.textY - ly.y) * ratio;
                     }
                 }); 
             }
@@ -381,7 +435,7 @@
                     cur += ly.img[isH?'width':'height']*ly.scale + gap; 
                 });
             }
-            else if (type === 'quick') { act('match'); act('distV'); act('crop'); }
+            else if (type === 'quick') { act('matchH'); act('distV'); act('crop'); }
             
             draw();
         };
@@ -405,8 +459,6 @@
             if (isPlay) return; 
             const {x, y} = getPos(e), l = layers[sel];
             const fSize = parseInt($('gFontSize').value) || 60;
-            ctx.textBaseline = 'top';
-            ctx.font = getFontStr();
             
             if (l) { 
                 const w = l.img.width*l.scale, h = l.img.height*l.scale; 
@@ -415,7 +467,8 @@
             
             for (let i = layers.length - 1; i >= 0; i--) {
                 const ly = layers[i];
-                if(ly.text && x >= ly.textX && x <= ly.textX + ctx.measureText(ly.text).width && y >= ly.textY && y <= ly.textY + fSize + 10) {
+                const bounds = getTextBounds(ly.text, fSize);
+                if(ly.text && x >= ly.textX && x <= ly.textX + bounds.w && y >= ly.textY && y <= ly.textY + bounds.h) {
                     isDragText = true; updateUI(i); 
                     offX = x - ly.textX; offY = y - ly.textY; 
                     return;
@@ -481,18 +534,29 @@
                     if ($('gShadow').checked) { c.shadowColor = 'rgba(0,0,0,0.6)'; c.shadowBlur = 6; }
                     if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeColor').value; }
 
-                    let chars = l.text.split(''), charW = 0;
+                    let chars = l.text.split('');
+                    let isVert = $('gVertical').checked;
+                    let fSize = parseInt($('gFontSize').value) || 60;
+                    let bounds = getTextBounds(l.text, fSize);
+                    let charX = 0, charY = 0;
+                    let lineHeight = fSize * 1.1;
+                    let tSpd = parseFloat($('typeSpeed').value) || 0.5;
+
                     chars.forEach((ch, idx) => {
-                        let startP = (idx / Math.max(chars.length, 1)) * 0.5; 
-                        let localAlpha = Math.min(Math.max((p - startP) * 5, 0), 1); 
+                        let startP = chars.length > 1 ? (idx / (chars.length - 1)) * tSpd : 0; 
+                        let localAlpha = Math.min(Math.max((p - startP) * (1 / 0.15), 0), 1); 
                         c.globalAlpha = localAlpha * alpha;
                         
                         if(ch !== ' ') {
                             c.fillStyle = l.colors[idx] || '#ffffff';
-                            if ($('gStroke').checked) c.strokeText(ch, charW, 0); 
-                            c.fillText(ch, charW, 0);   
+                            let cx = isVert ? charX + (bounds.w / 2) - (c.measureText(ch).width / 2) - 2 : charX;
+                            
+                            if ($('gStroke').checked) c.strokeText(ch, cx, charY); 
+                            c.fillText(ch, cx, charY);   
                         }
-                        charW += c.measureText(ch).width;
+                        
+                        if (isVert) charY += lineHeight;
+                        else charX += c.measureText(ch).width;
                     });
                     c.restore();
                 }
@@ -512,9 +576,9 @@
                 ctx.strokeRect(l.x, l.y, w, h); ctx.setLineDash([]); ctx.fillRect(l.x+w-6, l.y+h-6, 12, 12);
                 
                 if(l.text) {
-                    ctx.font = getFontStr();
                     const fSize = parseInt($('gFontSize').value) || 60;
-                    ctx.strokeRect(l.textX - 2, l.textY - 2, ctx.measureText(l.text).width + 4, fSize + 10);
+                    const bounds = getTextBounds(l.text, fSize);
+                    ctx.strokeRect(l.textX - 2, l.textY - 2, bounds.w, bounds.h);
                 }
             }
         };
@@ -524,17 +588,20 @@
         $('previewBtn').onclick = () => {
             if (!layers.length || isPlay || $('generateBtn').disabled) return;
             isPlay = true; let f = 0;
+            let dur = getDuration();
+            let totalFrames = Math.round(dur / (1000/30)); // 30 FPS 부드러운 미리보기
+            
             exec(t => { 
                 const loop = () => { 
-                    if (f >= 30) return setTimeout(() => { isPlay = false; updateUI(t); }, 500); 
+                    if (f >= totalFrames) return setTimeout(() => { isPlay = false; updateUI(t); }, 500); 
                     ctx.clearRect(0, 0, W, H);
-                    render(ctx, ease(f++ / 29)); setTimeout(loop, 40); 
+                    render(ctx, ease(f++ / Math.max(1, totalFrames - 1))); setTimeout(loop, 1000/30); 
                 }; 
                 loop(); 
             });
         };
 
-        // 파일 내보내기 핵심 로직 (마젠타 찌꺼기 해결)
+        // 파일 내보내기 로직 (용량 방어, 잔상 제거 및 속도 적용)
         $('generateBtn').onclick = () => {
             if (!layers.length || isPlay) return alert("이미지를 추가하거나 재생을 멈춰주세요.");
             
@@ -543,21 +610,24 @@
             const isGifBg = mode === 'gif_bg';
             const isGifTrans = mode === 'gif';
             const bgColor = $('gifBgColor').value;
+            const dur = getDuration();
             
             let ext = isAPNG ? '.png' : '.gif';
-            let fn = prompt("저장할 파일명:", "ccfolia_cutin")?.trim(); if (!fn) return; 
+            let fn = prompt("저장할 파일명:", "FebCryptbound_fighting")?.trim(); if (!fn) return; 
             if (!fn.endsWith(ext)) fn += ext;
             
             const btn = $('generateBtn'), og = btn.innerText;
             btn.disabled = $('previewBtn').disabled = true; btn.innerText = "⏳ 인코딩 중...";
             
-            const tF = 20; 
-            const fD = Math.floor(1000 / tF);
+            // 추출 프레임 및 딜레이 계산 (부드러운 애니메이션 유지하면서 파일 용량 조절)
+            let eFrames = Math.round(dur / 50); // 목표 20fps
+            if (eFrames > 40) eFrames = 40; // 프레임 폭주 방지
+            const eDelay = Math.round(dur / eFrames);
             
             let sc = 1.0;
             if (isAPNG) {
                 const maxPixels = 4000000; 
-                const curPixels = W * H * tF;
+                const curPixels = W * H * eFrames;
                 if (curPixels > maxPixels) sc = Math.min(1.0, Math.sqrt(maxPixels / curPixels));
             }
             
@@ -569,13 +639,13 @@
             exec(t => {
                 if (isAPNG) {
                     const frames = [];
-                    for (let i = 0; i < tF; i++) {
-                        oCtx.save(); oCtx.clearRect(0, 0, eW, eH); oCtx.scale(sc, sc); render(oCtx, ease(i / (tF - 1))); oCtx.restore();
+                    for (let i = 0; i < eFrames; i++) {
+                        oCtx.save(); oCtx.clearRect(0, 0, eW, eH); oCtx.scale(sc, sc); render(oCtx, ease(i / (eFrames - 1))); oCtx.restore();
                         frames.push(oCtx.getImageData(0, 0, eW, eH).data.buffer);
                     }
                     setTimeout(() => {
                         try {
-                            const encoded = UPNG.encode(frames, eW, eH, 256, Array(tF).fill(fD));
+                            const encoded = UPNG.encode(frames, eW, eH, 256, Array(eFrames).fill(eDelay));
                             const blob = new Blob([encoded], { type: 'image/apng' });
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
@@ -601,48 +671,44 @@
                             
                             const gif = new GIF({
                                 workers: 2,
-                                quality: 10,
+                                quality: 1, 
                                 width: eW,
                                 height: eH,
                                 workerScript: workerUrl,
-                                transparent: isGifTrans ? 0xFF00FF : null, // 0xFF00FF(순수 마젠타)를 투명 처리
+                                transparent: isGifTrans ? 0xFF00FF : null, 
                                 background: isGifBg ? bgColor : '#ffffff'
                             });
                             
-                            for (let i = 0; i < tF; i++) {
+                            for (let i = 0; i < eFrames; i++) {
                                 oCtx.save();
-                                oCtx.clearRect(0, 0, eW, eH); // 배경을 투명하게 초기화
+                                oCtx.clearRect(0, 0, eW, eH); 
                                 
-                                // 배경이 있는 GIF일 경우에만 색상을 채움
                                 if (isGifBg) {
                                     oCtx.fillStyle = bgColor;
                                     oCtx.fillRect(0, 0, eW, eH);
                                 }
                                 
                                 oCtx.scale(sc, sc); 
-                                render(oCtx, ease(i / (tF - 1))); 
+                                render(oCtx, ease(i / (eFrames - 1))); 
                                 oCtx.restore();
                                 
-                                // 투명 배경 GIF일 경우, 마젠타 찌꺼기 방지를 위해 그린 후에 크로마키 삽입
                                 if (isGifTrans) {
                                     const imgData = oCtx.getImageData(0, 0, eW, eH);
                                     const data = imgData.data;
                                     for (let j = 0; j < data.length; j += 4) {
                                         if (data[j+3] < 128) {
-                                            // 투명도가 높은 픽셀은 투명화 타겟인 순수 마젠타로 변경
                                             data[j] = 255; data[j+1] = 0; data[j+2] = 255; data[j+3] = 255; 
                                         } else {
-                                            // 혹시라도 일반 픽셀이 크로마키 색상과 겹치지 않도록 미세 조정
                                             if (data[j] === 255 && data[j+1] === 0 && data[j+2] === 255) {
                                                 data[j] = 254;
                                             }
-                                            data[j+3] = 255; // 완전 불투명화
+                                            data[j+3] = 255; 
                                         }
                                     }
                                     oCtx.putImageData(imgData, 0, 0);
                                 }
                                 
-                                gif.addFrame(oCtx.canvas, {copy: true, delay: fD});
+                                gif.addFrame(oCtx.canvas, {copy: true, delay: eDelay});
                             }
                             
                             gif.on('finished', function(blob) {
