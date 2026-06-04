@@ -37,11 +37,8 @@
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; text-align: center; }
         
-        /* 커스텀 헥스 컬러 피커 (OS 기본 RGB 제거) */
-        .color-picker-container { position: relative; display: inline-block; flex-shrink:0; }
-        .color-swatch { width: 20px; height: 20px; border: 1px solid #ccc; border-radius: 2px; cursor: pointer; display: inline-block; vertical-align: middle; }
-        .color-popup { display: none; position: absolute; top: 26px; left: 50%; transform: translateX(-50%); background: #fff; padding: 8px; border: 1px solid #E8D8C8; box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 100; border-radius: 4px; }
-        .color-popup input[type="text"] { font-family: monospace; font-size: 11px; width: 60px; text-align: center; border: 1px solid #ccc; border-radius: 2px; padding: 4px; text-transform: uppercase; }
+        /* 색상 피커 스타일 (OS 기본 동작) */
+        input[type="color"] { width: 22px; height: 22px; padding: 0; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; background: transparent; vertical-align: middle; }
 
         /* 버튼 및 레이아웃 */
         .row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
@@ -118,12 +115,11 @@
             
             <div class="control-group">
                 <h3>2. 캔버스 조절 및 이미지 정렬</h3>
-                <div class="row">
-                    <button class="btn magic" onclick="act('quickH')">✨ 간단 배치 (가로)</button>
-                    <button class="btn magic" onclick="act('quickV')">✨ 간단 배치 (세로)</button>
-                </div>
+                <div class="row"><button class="btn magic" onclick="act('quick')">✨ 간단 배치 (자동 정렬)</button></div>
                 
-                <button class="btn" onclick="toggleAdvAlign(this)" style="width:100%; margin-top:5px; background:#f0f0f0; border-style:dashed;">상세 조절 펼치기 ▼</button>
+                <div style="text-align:center; margin: 8px 0 3px 0;">
+                    <span onclick="toggleAdvAlign(this)" style="text-decoration: underline; cursor: pointer; font-size: 11px; color: #555;">상세 조절 펼치기 ▼</span>
+                </div>
                 
                 <div id="advAlignWrapper" style="display:none; margin-top:8px;">
                     <div class="row">
@@ -136,7 +132,7 @@
                         <button class="btn" onclick="act('distV')">↕️ 세로 간격 정렬</button>
                         <div style="flex:1; display:flex; justify-content:center; align-items:center;">
                             <label style="font-size:11px; display:flex; align-items:center; white-space:nowrap;">이미지 간격: 
-                                <input type="number" id="gap" value="20" onchange="triggerAutoSave()" style="width:35px; margin-left:2px; height:20px;">
+                                <input type="number" id="gap" value="20" onchange="triggerAutoSave()" style="width:35px; margin-left:4px; height:20px; border:1px solid #ccc; border-radius:3px;">
                             </label>
                         </div>
                     </div>
@@ -144,9 +140,8 @@
             </div>
             
             <div class="control-group" style="flex:1; display:flex; flex-direction:column;">
-                <h3>3. 레이어 & 애니메이션 설정</h3>
+                <h3>3. 애니메이션 속도</h3>
                 <div class="row" style="margin-bottom:8px;">
-                    <label style="font-size:12px; font-weight:bold; width:95px;">애니메이션 속도:</label>
                     <select id="animSpeed" onchange="toggleCustomSpeed(); draw();" style="flex:1; font-size:12px;">
                         <option value="1000">빠르게</option>
                         <option value="2000" selected>기본</option>
@@ -169,7 +164,7 @@
                 </div>
                 <div class="row">
                     <label style="font-size:12px; width:70px;">타이핑 속도:</label>
-                    <select id="typeSpeed" onchange="toggleCustomTypeSpeed(); draw();" style="flex:1; font-size:12px;">
+                    <select id="typeSpeed" onchange="toggleCustomTypeSpeed(); draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
                         <option value="50">빠르게</option>
                         <option value="100" selected>기본</option>
                         <option value="200">느리게</option>
@@ -188,8 +183,9 @@
                         <option value="Nanum Myeongjo">나눔명조</option>
                         <option value="Malgun Gothic">기본고딕</option>
                     </select>
-                    <label style="font-size:12px; display:flex; align-items:center; margin-left:5px; white-space:nowrap;">크기: 
-                        <input type="number" id="gFontSize" value="60" onchange="draw(); triggerAutoSave();" style="width:45px; margin-left:4px;">
+                    <label style="font-size:12px; display:flex; align-items:center; margin-left:5px; white-space:nowrap;">폰트 크기: 
+                        <input type="number" id="gFontSize" value="60" onchange="draw(); triggerAutoSave();" style="width:40px; margin-left:4px;">
+                        <span style="font-size:11px; margin-left:2px;">pt</span>
                     </label>
                 </div>
                 
@@ -200,15 +196,8 @@
                     <label class="fx-label"><input type="checkbox" id="gShadow" checked onchange="draw(); triggerAutoSave();">그림자</label>
                     <label class="fx-label"><input type="checkbox" id="gStroke" checked onchange="draw(); triggerAutoSave();">테두리</label>
                     
-                    <div class="color-picker-container" title="테두리 색상 (HEX 입력)">
-                        <div class="color-swatch" id="gStrokeSwatch" style="background:#000000;" onclick="toggleColorPopup(this, event)"></div>
-                        <div class="color-popup">
-                            <div style="font-size:10px; color:#777; margin-bottom:3px; text-align:center;">HEX CODE</div>
-                            <input type="text" id="gStrokeHex" value="#000000" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { $('gStrokeSwatch').style.background = this.value; draw(); triggerAutoSave(); }">
-                        </div>
-                    </div>
-                    
-                    <label class="fx-label" style="margin-left:auto;">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw(); triggerAutoSave();" style="width:28px; margin-left:2px; height:22px; border:1px solid #ccc; border-radius:3px;"></label>
+                    <input type="color" id="gStrokeColor" value="#000000" oninput="draw(); triggerAutoSave();" title="테두리 색상">
+                    <label class="fx-label" style="margin-left:2px;">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw(); triggerAutoSave();" style="width:28px; margin-left:2px; height:22px; border:1px solid #ccc; border-radius:3px;"></label>
                 </div>
             </div>
 
@@ -224,16 +213,10 @@
                 <div id="bgOptionWrapper" class="row" style="display:none; margin-top:5px; padding: 6px; background: #f5f5f5; border-radius: 4px; border: 1px solid #E8D8C8;">
                     <label style="font-size:11px; margin-right:3px; font-weight:bold;">배경색:</label>
                     
-                    <div class="color-picker-container" title="배경 색상 (HEX 입력)">
-                        <div class="color-swatch" id="gifBgSwatch" style="background:#ffffff;" onclick="toggleColorPopup(this, event)"></div>
-                        <div class="color-popup" style="bottom: 30px; top: auto;">
-                            <div style="font-size:10px; color:#777; margin-bottom:3px; text-align:center;">HEX CODE</div>
-                            <input type="text" id="gifBgHex" value="#ffffff" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { $('gifBgSwatch').style.background = this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave(); }">
-                        </div>
-                    </div>
+                    <input type="color" id="gifBgColor" value="#ffffff" oninput="$('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave();" title="배경 색상">
 
                     <label style="font-size:11px; display:flex; align-items:center; margin-left:auto; cursor:pointer; color:#0055FF; font-weight:bold;">
-                        <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgHex').value='#2b2b2b'; $('gifBgSwatch').style.background='#2b2b2b'; } else { $('gifBgHex').value='#ffffff'; $('gifBgSwatch').style.background='#ffffff'; } draw(); triggerAutoSave();">
+                        <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgColor').value='#2b2b2b'; } else { $('gifBgColor').value='#ffffff'; } draw(); triggerAutoSave();">
                         코코포 배경
                     </label>
                 </div>
@@ -260,33 +243,16 @@
         const ease = t => 1 - Math.pow(1 - t, 3);
 
         // 아코디언 토글 (상세 조절 펼치기/접기)
-        window.toggleAdvAlign = (btn) => {
+        window.toggleAdvAlign = (span) => {
             const wrap = $('advAlignWrapper');
             if(wrap.style.display === 'none') {
                 wrap.style.display = 'block';
-                btn.innerText = '상세 조절 접기 ▲';
-                btn.style.borderStyle = 'solid';
+                span.innerText = '상세 조절 접기 ▲';
             } else {
                 wrap.style.display = 'none';
-                btn.innerText = '상세 조절 펼치기 ▼';
-                btn.style.borderStyle = 'dashed';
+                span.innerText = '상세 조절 펼치기 ▼';
             }
         };
-
-        // 커스텀 HEX 컬러 팝업 토글
-        window.toggleColorPopup = (el, e) => {
-            e.stopPropagation();
-            const popup = el.nextElementSibling;
-            const isVisible = popup.style.display === 'block';
-            document.querySelectorAll('.color-popup').forEach(p => p.style.display = 'none');
-            if (!isVisible) popup.style.display = 'block';
-        };
-        // 팝업 외부 클릭 시 닫기
-        document.addEventListener('click', e => {
-            if (!e.target.closest('.color-picker-container')) {
-                document.querySelectorAll('.color-popup').forEach(p => p.style.display = 'none');
-            }
-        });
 
         window.toggleBgColor = () => {
             const v = $('quality').value;
@@ -405,7 +371,7 @@
                     gItalic: $('gItalic').checked,
                     gShadow: $('gShadow').checked,
                     gStroke: $('gStroke').checked,
-                    gStrokeHex: $('gStrokeHex').value,
+                    gStrokeColor: $('gStrokeColor').value,
                     gStrokeWidth: $('gStrokeWidth').value,
                     gVertical: $('gVertical').checked,
                     typeSpeed: $('typeSpeed').value,
@@ -413,7 +379,7 @@
                     animSpeed: $('animSpeed').value,
                     customSpeed: $('customSpeed').value,
                     quality: $('quality').value,
-                    gifBgHex: $('gifBgHex').value,
+                    gifBgColor: $('gifBgColor').value,
                     ccfoliaBgCheck: $('ccfoliaBgCheck').checked,
                     canvasW: W, canvasH: H
                 }
@@ -436,8 +402,7 @@
                 $('gItalic').checked = !!s.gItalic;
                 $('gShadow').checked = !!s.gShadow;
                 $('gStroke').checked = !!s.gStroke;
-                $('gStrokeHex').value = s.gStrokeHex || '#000000';
-                $('gStrokeSwatch').style.background = s.gStrokeHex || '#000000';
+                $('gStrokeColor').value = s.gStrokeColor || '#000000';
                 $('gStrokeWidth').value = s.gStrokeWidth || 3;
                 $('gVertical').checked = !!s.gVertical;
                 $('typeSpeed').value = s.typeSpeed || 100;
@@ -445,8 +410,7 @@
                 $('animSpeed').value = s.animSpeed || 2000;
                 $('customSpeed').value = s.customSpeed || 2000;
                 $('quality').value = s.quality || 'apng';
-                $('gifBgHex').value = s.gifBgHex || '#ffffff';
-                $('gifBgSwatch').style.background = s.gifBgHex || '#ffffff';
+                $('gifBgColor').value = s.gifBgColor || '#ffffff';
                 $('ccfoliaBgCheck').checked = !!s.ccfoliaBgCheck;
 
                 toggleCustomSpeed();
@@ -553,7 +517,7 @@
                 div.className = `layer-item ${i === sel ? 'active' : ''}`;
                 div.draggable = true;
                 
-                div.onclick = e => { if (!['SELECT','BUTTON','INPUT'].includes(e.target.tagName) && !e.target.closest('.color-picker-container')) updateUI(i); };
+                div.onclick = e => { if (!['SELECT','BUTTON','INPUT'].includes(e.target.tagName)) updateUI(i); };
                 div.ondragstart = e => { e.dataTransfer.setData('idx', i); setTimeout(() => div.style.opacity = '0.5', 0); };
                 div.ondragend = () => div.style.opacity = '1';
                 div.ondragover = e => { e.preventDefault(); div.classList.add('drag-over'); };
@@ -578,13 +542,7 @@
                         ${chars.map((ch, cIdx) => ch === ' ' ? '' : `
                             <div class="char-color-box">
                                 <span>${ch}</span>
-                                <div class="color-picker-container" title="색상 설정">
-                                    <div class="color-swatch" style="background:${l.colors[cIdx]};" onclick="toggleColorPopup(this, event)"></div>
-                                    <div class="color-popup">
-                                        <div style="font-size:10px; color:#777; margin-bottom:3px; text-align:center;">HEX CODE</div>
-                                        <input type="text" value="${l.colors[cIdx]}" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { this.parentElement.previousElementSibling.style.background=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave(); }">
-                                    </div>
-                                </div>
+                                <input type="color" value="${l.colors[cIdx]}" oninput="layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave();" title="글자 색상">
                             </div>
                         `).join('')}
                     </div>`;
@@ -723,8 +681,17 @@
                     cur += ly.img[isH?'width':'height']*ly.scale + gap; 
                 });
             }
-            else if (type === 'quickV') { act('matchH'); act('distV'); act('crop'); }
-            else if (type === 'quickH') { act('matchH'); act('distH'); act('crop'); }
+            else if (type === 'quick') {
+                let totalW = 0, totalH = 0;
+                layers.forEach(ly => { totalW += ly.img.width; totalH += ly.img.height; });
+                if (totalW > totalH) { 
+                    // 가로폭이 더 넓으면 (가로형 이미지들) -> 세로로 배치
+                    act('matchW'); act('distV'); act('crop'); 
+                } else { 
+                    // 세로폭이 더 넓으면 (세로형 이미지들) -> 가로로 배치
+                    act('matchH'); act('distH'); act('crop'); 
+                }
+            }
             
             draw();
             triggerAutoSave();
@@ -826,7 +793,7 @@
                     c.textBaseline = 'top';
                     
                     if ($('gShadow').checked) { c.shadowColor = 'rgba(0,0,0,0.6)'; c.shadowBlur = 6; }
-                    if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeHex').value; }
+                    if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeColor').value; }
 
                     let chars = l.text.split('');
                     let isVert = $('gVertical').checked;
@@ -906,7 +873,7 @@
             const isGifBg = mode === 'gif_bg';
             const isGifTrans = mode === 'gif';
             const isMP4 = mode === 'mp4';
-            const bgColor = $('gifBgHex').value;
+            const bgColor = $('gifBgColor').value;
             const dur = getDuration();
             
             let videoExt = (window.MediaRecorder && MediaRecorder.isTypeSupported('video/mp4')) ? '.mp4' : '.webm';
