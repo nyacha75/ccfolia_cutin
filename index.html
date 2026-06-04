@@ -36,14 +36,19 @@
         input[type="checkbox"] { cursor: pointer; vertical-align: middle; margin: 0; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; text-align: center; }
-        
+
+        /* 컬러 피커 컴팩트 UI (네이티브 컬러선택기 + 헥스코드) */
+        .color-picker-wrapper { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 3px; background: #fff; overflow: hidden; height: 22px; flex-shrink: 0; }
+        .color-picker-wrapper input[type="color"] { width: 26px; height: 26px; padding: 0; margin: -2px; border: none; cursor: pointer; background: none; }
+        .color-picker-wrapper input[type="text"] { border: none; width: 48px; font-size: 11px; font-family: monospace; outline: none; text-transform: uppercase; padding: 0 4px; text-align: center; }
+
         /* 버튼 및 레이아웃 */
         .row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
         .btn { background: #fff; color: #333; border: 1px solid #E8D8C8; flex: 1; padding: 8px 6px; font-size: 12px; cursor: pointer; border-radius: 4px; transition: 0.2s; text-align: center; }
         .btn:hover { background: #F2E8DA; }
         .btn.hl { background: #F2E8DA; font-weight: bold; }
         .btn.hl:hover { background: #E8D8C8; }
-        .btn.magic { background: #0055FF; color: #fff; border-color: #0044CC; font-weight: bold; font-size: 12px; padding: 10px; }
+        .btn.magic { background: #0055FF; color: #fff; border-color: #0044CC; font-weight: bold; font-size: 13px; padding: 10px; }
         .btn.magic:hover { background: #0044CC; }
         
         /* 레이어 리스트 */
@@ -80,7 +85,7 @@
             <canvas id="canvas" width="600" height="800"></canvas>
             <div class="hint-box">
                 • <span>마우스 드래그</span>: 이동 (텍스트/이미지 이동) | <span>휠</span>: 크기 조절<br>
-                • <span>[간단 배치]</span>: 방향에 맞는 정렬과 캔버스 맞추기를 원클릭으로 자동 처리합니다.
+                • <span>[간단 배치]</span>: 이미지 비율(가로/세로형)을 자동 판별하여 최적의 배열로 한 번에 정렬합니다.
             </div>
         </div>
         
@@ -95,10 +100,7 @@
             
             <div class="control-group">
                 <h3>2. 캔버스 조절 및 이미지 정렬</h3>
-                <div class="row">
-                    <button class="btn magic" onclick="act('quickH')">✨ 간단 배치 (가로)</button>
-                    <button class="btn magic" onclick="act('quickV')">✨ 간단 배치 (세로)</button>
-                </div>
+                <div class="row"><button class="btn magic" onclick="act('quick')">✨ 간단 배치 (자동 정렬)</button></div>
                 <div class="row">
                     <button class="btn hl" onclick="act('matchH')">📏 세로 통일</button>
                     <button class="btn hl" onclick="act('matchW')">📏 가로 통일</button>
@@ -124,7 +126,7 @@
                         <option value="custom">직접 조정</option>
                     </select>
                     <div id="customSpeedWrapper" style="display:none; align-items:center; margin-left:4px;">
-                        <input type="number" id="customSpeed" value="2000" onchange="draw()" style="width:50px; font-size:11px; height:24px; border:1px solid #ccc; border-radius:3px;">
+                        <input type="number" id="customSpeed" value="2000" onchange="draw(); triggerAutoSave();" style="width:50px; font-size:11px; height:24px; border:1px solid #ccc; border-radius:3px;">
                         <span style="font-size:11px; margin-left:3px; color:#555;">ms</span>
                     </div>
                 </div>
@@ -146,38 +148,35 @@
                         <option value="custom">직접 조정</option>
                     </select>
                     <div id="customTypeSpeedWrapper" style="display:none; align-items:center; margin-left:4px;">
-                        <input type="number" id="customTypeSpeed" value="100" onchange="draw()" style="width:50px; font-size:11px; height:24px; border:1px solid #ccc; border-radius:3px;">
+                        <input type="number" id="customTypeSpeed" value="100" onchange="draw(); triggerAutoSave();" style="width:50px; font-size:11px; height:24px; border:1px solid #ccc; border-radius:3px;">
                         <span style="font-size:11px; margin-left:3px; color:#555;">ms</span>
                     </div>
                 </div>
                 <div class="row">
                     <label style="font-size:12px; width:70px;">적용 폰트:</label>
-                    <select id="globalFont" onchange="draw();" style="flex:1; font-size:12px;">
+                    <select id="globalFont" onchange="draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
                         <option value="Black Han Sans" selected>블랙한산스</option>
                         <option value="Jua">주아체</option>
                         <option value="Nanum Myeongjo">나눔명조</option>
                         <option value="Malgun Gothic">기본고딕</option>
                     </select>
                     <label style="font-size:12px; display:flex; align-items:center; margin-left:5px; white-space:nowrap;">크기: 
-                        <input type="number" id="gFontSize" value="60" onchange="draw()" style="width:45px; margin-left:4px;">
+                        <input type="number" id="gFontSize" value="60" onchange="draw(); triggerAutoSave();" style="width:45px; margin-left:4px;">
                     </label>
                 </div>
                 <div class="row" style="font-size:11px; gap: 5px; flex-wrap: wrap; margin-top: 8px;">
-                    <label class="fx-label" style="font-weight:bold; color:#0055FF; margin-right:2px;"><input type="checkbox" id="gVertical" onchange="draw()">세로 쓰기</label>
-                    <label class="fx-label"><input type="checkbox" id="gBold" onchange="draw()"> 굵게</label>
-                    <label class="fx-label"><input type="checkbox" id="gItalic" checked onchange="draw()"> 기울임</label>
-                    <label class="fx-label"><input type="checkbox" id="gShadow" checked onchange="draw()"> 그림자</label>
-                    <label class="fx-label"><input type="checkbox" id="gStroke" checked onchange="draw()"> 테두리</label>
+                    <label class="fx-label" style="font-weight:bold; color:#0055FF; margin-right:2px;"><input type="checkbox" id="gVertical" onchange="draw(); triggerAutoSave();">세로 쓰기</label>
+                    <label class="fx-label"><input type="checkbox" id="gBold" onchange="draw(); triggerAutoSave();"> 굵게</label>
+                    <label class="fx-label"><input type="checkbox" id="gItalic" checked onchange="draw(); triggerAutoSave();"> 기울임</label>
+                    <label class="fx-label"><input type="checkbox" id="gShadow" checked onchange="draw(); triggerAutoSave();"> 그림자</label>
+                    <label class="fx-label"><input type="checkbox" id="gStroke" checked onchange="draw(); triggerAutoSave();"> 테두리</label>
                     
-                    <div class="color-picker-container" style="position:relative;">
-                        <div class="color-swatch" id="gStrokeSwatch" style="width:20px;height:20px;background:#000000;border:1px solid #ccc;border-radius:2px;cursor:pointer;" onclick="toggleColorPopup(this, event)"></div>
-                        <div class="color-popup" style="display:none; position:absolute; top:24px; left:50%; transform:translateX(-50%); background:#fff; padding:6px; border:1px solid #E8D8C8; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100; border-radius:4px;">
-                            <div style="font-size:10px; color:#777; margin-bottom:3px; text-align:center;">HEX CODE</div>
-                            <input type="text" id="gStrokeHex" value="#000000" maxlength="7" style="font-family:monospace; font-size:11px; width:55px; text-align:center; text-transform:uppercase; border:1px solid #ccc; padding:2px;" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { $('gStrokeSwatch').style.background = this.value; draw(); }">
-                        </div>
+                    <div class="color-picker-wrapper" title="테두리 색상">
+                        <input type="color" id="gStrokeColor" value="#000000" oninput="$('gStrokeHex').value=this.value; draw(); triggerAutoSave();">
+                        <input type="text" id="gStrokeHex" value="#000000" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { $('gStrokeColor').value=this.value; draw(); triggerAutoSave(); }">
                     </div>
                     
-                    <label class="fx-label" style="margin-left:auto;">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw()" style="width:28px; margin-left:2px; height:22px; border:1px solid #ccc; border-radius:3px;"></label>
+                    <label class="fx-label" style="margin-left:auto;">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw(); triggerAutoSave();" style="width:28px; margin-left:2px; height:22px; border:1px solid #ccc; border-radius:3px;"></label>
                 </div>
             </div>
 
@@ -192,15 +191,12 @@
                 
                 <div id="bgOptionWrapper" class="row" style="display:none; margin-top:5px; padding: 6px; background: #f5f5f5; border-radius: 4px; border: 1px solid #E8D8C8;">
                     <label style="font-size:11px; margin-right:3px; font-weight:bold;">배경색:</label>
-                    <div class="color-picker-container" style="position:relative;">
-                        <div class="color-swatch" id="gifBgSwatch" style="width:22px;height:22px;background:#ffffff;border:1px solid #ccc;border-radius:2px;cursor:pointer;" onclick="toggleColorPopup(this, event)"></div>
-                        <div class="color-popup" style="display:none; position:absolute; bottom:28px; left:50%; transform:translateX(-50%); background:#fff; padding:6px; border:1px solid #E8D8C8; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100; border-radius:4px;">
-                            <div style="font-size:10px; color:#777; margin-bottom:3px; text-align:center;">HEX CODE</div>
-                            <input type="text" id="gifBgHex" value="#ffffff" maxlength="7" style="font-family:monospace; font-size:11px; width:55px; text-align:center; text-transform:uppercase; border:1px solid #ccc; padding:2px;" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { $('gifBgSwatch').style.background = this.value; $('ccfoliaBgCheck').checked=false; draw(); }">
-                        </div>
+                    <div class="color-picker-wrapper">
+                        <input type="color" id="gifBgColor" value="#ffffff" oninput="$('gifBgHex').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave();">
+                        <input type="text" id="gifBgHex" value="#ffffff" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { $('gifBgColor').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave(); }">
                     </div>
                     <label style="font-size:11px; display:flex; align-items:center; margin-left:auto; cursor:pointer; color:#0055FF; font-weight:bold;">
-                        <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgHex').value='#2b2b2b'; $('gifBgSwatch').style.background='#2b2b2b'; } else { $('gifBgHex').value='#ffffff'; $('gifBgSwatch').style.background='#ffffff'; } draw();">
+                        <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgColor').value='#2b2b2b'; $('gifBgHex').value='#2b2b2b'; } else { $('gifBgColor').value='#ffffff'; $('gifBgHex').value='#ffffff'; } draw(); triggerAutoSave();">
                         코코포 배경
                     </label>
                 </div>
@@ -212,15 +208,18 @@
             </div>
 
             <div class="control-group" style="background:#F0F4FF; border-color:#0055FF; padding:15px; border-radius:6px; box-shadow: inset 0 0 0 1px #0055FF22; margin-top:15px; border-bottom:none;">
-                <h3 style="margin-bottom:8px; font-size:13px; color:#0044CC;">💾 작업 데이터 백업 및 복원</h3>
+                <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+                    <h3 style="margin:0; font-size:13px; color:#0044CC;">💾 작업 데이터 백업 및 복원</h3>
+                    <span id="autoSaveStatus" style="font-size:11px; color:#ff4d4d; font-weight:bold;"></span>
+                </div>
                 <div class="row">
                     <button class="btn" style="border-color:#0055FF; color:#0055FF; font-weight:bold;" onclick="saveProjectFile()">↓ 프로젝트 저장 (.json)</button>
                     <button class="btn" style="border-color:#0055FF; color:#0055FF; font-weight:bold;" onclick="$('projectFileInput').click()">↑ 프로젝트 불러오기</button>
                     <input type="file" id="projectFileInput" accept=".json" style="display:none;" onchange="loadProjectFile(event)">
                 </div>
                 <div style="font-size:11px; color:#555; margin-top:10px; line-height:1.5;">
-                    • 작업 내용은 변경될 때마다 브라우저에 <b>실시간으로 자동 저장</b>됩니다.<br>
-                    • 브라우저 캐시 삭제 시 데이터가 날아갈 수 있으므로 중요한 작업은 <b>프로젝트 파일로 저장</b>하세요.
+                    • 모든 작업 내용은 브라우저 내부 캐시(DB)에 <b>실시간으로 자동 보존</b>됩니다.<br>
+                    • 브라우저 캐시 초기화 시 데이터가 날아갈 수 있으므로 중요한 작업은 <b>프로젝트 파일로 저장</b>하세요.
                 </div>
             </div>
 
@@ -239,21 +238,6 @@
         let gifWorkerUrl = null; 
         
         const ease = t => 1 - Math.pow(1 - t, 3);
-
-        // 커스텀 HEX 컬러 팝업 토글 로직
-        window.toggleColorPopup = (el, e) => {
-            e.stopPropagation();
-            const popup = el.nextElementSibling;
-            const isVisible = popup.style.display === 'block';
-            document.querySelectorAll('.color-popup').forEach(p => p.style.display = 'none');
-            if (!isVisible) popup.style.display = 'block';
-        };
-
-        document.addEventListener('click', e => {
-            if (!e.target.closest('.color-picker-container')) {
-                document.querySelectorAll('.color-popup').forEach(p => p.style.display = 'none');
-            }
-        });
 
         window.toggleBgColor = () => {
             const v = $('quality').value;
@@ -298,17 +282,62 @@
             }
         };
 
-        // --- 데이터 백업 및 복원 로직 ---
+        // --- 용량 무제한 IndexedDB 자동 백업 로직 ---
+        const localDB = {
+            db: null,
+            init() {
+                return new Promise((res, rej) => {
+                    const req = indexedDB.open('CCfoliaCutinDB', 1);
+                    req.onupgradeneeded = e => {
+                        if (!e.target.result.objectStoreNames.contains('data')) {
+                            e.target.result.createObjectStore('data');
+                        }
+                    };
+                    req.onsuccess = e => { this.db = e.target.result; res(); };
+                    req.onerror = rej;
+                });
+            },
+            set(key, val) {
+                return new Promise((res) => {
+                    if (!this.db) return res();
+                    const tx = this.db.transaction('data', 'readwrite');
+                    tx.objectStore('data').put(val, key);
+                    tx.oncomplete = res;
+                });
+            },
+            get(key) {
+                return new Promise((res) => {
+                    if (!this.db) return res(null);
+                    const tx = this.db.transaction('data', 'readonly');
+                    const req = tx.objectStore('data').get(key);
+                    req.onsuccess = () => res(req.result);
+                    req.onerror = () => res(null);
+                });
+            },
+            remove(key) {
+                return new Promise((res) => {
+                    if (!this.db) return res();
+                    const tx = this.db.transaction('data', 'readwrite');
+                    tx.objectStore('data').delete(key);
+                    tx.oncomplete = res;
+                });
+            }
+        };
+
         let autoSaveTimer;
         window.triggerAutoSave = () => {
             if(isPlay) return;
             clearTimeout(autoSaveTimer);
-            autoSaveTimer = setTimeout(() => {
+            autoSaveTimer = setTimeout(async () => {
                 try {
-                    localStorage.setItem('ccfolia_cutin_backup', JSON.stringify(getProjectData()));
-                } catch(e) {
-                    console.warn("용량 한계로 자동 저장이 생략되었습니다.");
-                }
+                    const data = JSON.stringify(getProjectData());
+                    await localDB.set('ccfolia_cutin_backup', data);
+                    const st = $('autoSaveStatus');
+                    if (st) { 
+                        st.innerText = "✓ 방금 전 자동 저장됨"; 
+                        setTimeout(() => { if (st.innerText === "✓ 방금 전 자동 저장됨") st.innerText = ""; }, 2500); 
+                    }
+                } catch(e) { console.error("자동 저장 실패", e); }
             }, 1000);
         };
 
@@ -327,6 +356,7 @@
                     gItalic: $('gItalic').checked,
                     gShadow: $('gShadow').checked,
                     gStroke: $('gStroke').checked,
+                    gStrokeColor: $('gStrokeColor').value,
                     gStrokeHex: $('gStrokeHex').value,
                     gStrokeWidth: $('gStrokeWidth').value,
                     gVertical: $('gVertical').checked,
@@ -335,6 +365,7 @@
                     animSpeed: $('animSpeed').value,
                     customSpeed: $('customSpeed').value,
                     quality: $('quality').value,
+                    gifBgColor: $('gifBgColor').value,
                     gifBgHex: $('gifBgHex').value,
                     ccfoliaBgCheck: $('ccfoliaBgCheck').checked,
                     canvasW: W, canvasH: H
@@ -358,8 +389,8 @@
                 $('gItalic').checked = !!s.gItalic;
                 $('gShadow').checked = !!s.gShadow;
                 $('gStroke').checked = !!s.gStroke;
+                $('gStrokeColor').value = s.gStrokeColor || '#000000';
                 $('gStrokeHex').value = s.gStrokeHex || '#000000';
-                $('gStrokeSwatch').style.background = s.gStrokeHex || '#000000';
                 $('gStrokeWidth').value = s.gStrokeWidth || 3;
                 $('gVertical').checked = !!s.gVertical;
                 $('typeSpeed').value = s.typeSpeed || 100;
@@ -367,8 +398,8 @@
                 $('animSpeed').value = s.animSpeed || 2000;
                 $('customSpeed').value = s.customSpeed || 2000;
                 $('quality').value = s.quality || 'apng';
+                $('gifBgColor').value = s.gifBgColor || '#ffffff';
                 $('gifBgHex').value = s.gifBgHex || '#ffffff';
-                $('gifBgSwatch').style.background = s.gifBgHex || '#ffffff';
                 $('ccfoliaBgCheck').checked = !!s.ccfoliaBgCheck;
 
                 toggleCustomSpeed();
@@ -387,9 +418,7 @@
                     img.onload = () => {
                         layers[idx] = { ...lData, img: img }; 
                         loadedCount++;
-                        if(loadedCount === data.layers.length) {
-                            updateUI(layers.length - 1);
-                        }
+                        if(loadedCount === data.layers.length) updateUI(layers.length - 1);
                     };
                     img.src = lData.src;
                 });
@@ -425,20 +454,21 @@
             e.target.value = '';
         };
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const backup = localStorage.getItem('ccfolia_cutin_backup');
-            if(backup) {
-                try {
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await localDB.init();
+                const backup = await localDB.get('ccfolia_cutin_backup');
+                if (backup) {
                     const data = JSON.parse(backup);
-                    if(data && data.layers && data.layers.length > 0) {
-                        if(confirm("이전에 작업하던 데이터가 남아있습니다. 복구하시겠습니까?")) {
+                    if (data && data.layers && data.layers.length > 0) {
+                        if (confirm("이전에 작업하던 데이터가 남아있습니다. 복구하시겠습니까?")) {
                             restoreProjectData(data);
                         } else {
-                            localStorage.removeItem('ccfolia_cutin_backup');
+                            localDB.remove('ccfolia_cutin_backup');
                         }
                     }
-                } catch(e){}
-            }
+                }
+            } catch(e) {}
         });
 
         $('fontInput').onchange = async e => {
@@ -457,6 +487,7 @@
                         $('globalFont').value = fontName;
                     }
                     draw();
+                    triggerAutoSave();
                 } catch (err) { alert('폰트 로드 실패: ' + file.name); }
             }
             e.target.value = '';
@@ -473,7 +504,7 @@
                 div.className = `layer-item ${i === sel ? 'active' : ''}`;
                 div.draggable = true;
                 
-                div.onclick = e => { if (!['SELECT','BUTTON','INPUT'].includes(e.target.tagName) && !e.target.closest('.color-picker-container')) updateUI(i); };
+                div.onclick = e => { if (!['SELECT','BUTTON','INPUT'].includes(e.target.tagName)) updateUI(i); };
                 div.ondragstart = e => { e.dataTransfer.setData('idx', i); setTimeout(() => div.style.opacity = '0.5', 0); };
                 div.ondragend = () => div.style.opacity = '1';
                 div.ondragover = e => { e.preventDefault(); div.classList.add('drag-over'); };
@@ -485,6 +516,7 @@
                         const activeL = layers[sel];
                         layers.splice(i, 0, layers.splice(from, 1)[0]);
                         updateUI(layers.indexOf(activeL));
+                        triggerAutoSave();
                     }
                 };
 
@@ -497,12 +529,9 @@
                         ${chars.map((ch, cIdx) => ch === ' ' ? '' : `
                             <div class="char-color-box">
                                 <span>${ch}</span>
-                                <div class="color-picker-container" style="position:relative;">
-                                    <div class="color-swatch" style="width:22px;height:22px;background:${l.colors[cIdx]};border:1px solid #ccc;border-radius:2px;cursor:pointer;" onclick="toggleColorPopup(this, event)"></div>
-                                    <div class="color-popup" style="display:none; position:absolute; top:26px; left:50%; transform:translateX(-50%); background:#fff; padding:6px; border:1px solid #E8D8C8; box-shadow:0 4px 10px rgba(0,0,0,0.1); z-index:100; border-radius:4px;">
-                                        <div style="font-size:10px; color:#777; margin-bottom:3px; text-align:center;">HEX CODE</div>
-                                        <input type="text" class="hex-input" value="${l.colors[cIdx]}" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/)) { this.parentElement.previousElementSibling.style.background=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); }">
-                                    </div>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" value="${l.colors[cIdx]}" oninput="this.nextElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave();">
+                                    <input type="text" value="${l.colors[cIdx]}" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { this.previousElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave(); }">
                                 </div>
                             </div>
                         `).join('')}
@@ -529,7 +558,7 @@
                         </select>
                     </div>
                     <div class="row" style="margin-top:5px;">
-                        <input type="text" placeholder="텍스트 입력" value="${l.text}" oninput="layers[${i}].text=this.value; draw();" onchange="updateUI(${i});" style="flex:1;">
+                        <input type="text" placeholder="텍스트 입력" value="${l.text}" oninput="layers[${i}].text=this.value; draw(); triggerAutoSave();" onchange="updateUI(${i});" style="flex:1;">
                     </div>
                     ${colorPickersHTML}
                 `;
@@ -642,10 +671,16 @@
                     cur += ly.img[isH?'width':'height']*ly.scale + gap; 
                 });
             }
-            else if (type === 'quickH') { act('matchH'); act('distV'); act('crop'); }
-            else if (type === 'quickV') { act('matchH'); act('distH'); act('crop'); }
+            else if (type === 'quick') {
+                let totalW = 0, totalH = 0;
+                layers.forEach(ly => { totalW += ly.img.width; totalH += ly.img.height; });
+                // 가로형(Landscape)이면 세로 배치, 세로형(Portrait)이면 가로 배치
+                if (totalW > totalH) { act('matchW'); act('distV'); act('crop'); } 
+                else { act('matchH'); act('distH'); act('crop'); }
+            }
             
             draw();
+            triggerAutoSave();
         };
 
         const getPos = e => { const r = canvasEl.getBoundingClientRect(); return { x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height) }; };
@@ -661,6 +696,7 @@
             l.textX = l.x + (l.textX - l.x) * ratio;
             l.textY = l.y + (l.textY - l.y) * ratio;
             draw(); 
+            triggerAutoSave();
         };
         
         canvasEl.onmousedown = e => {
@@ -714,6 +750,7 @@
         };
         
         window.onmouseup = () => {
+            if (isDragImg || isDragText || isRes) triggerAutoSave();
             isDragImg = isDragText = isRes = false;
         }
 
@@ -742,7 +779,7 @@
                     c.textBaseline = 'top';
                     
                     if ($('gShadow').checked) { c.shadowColor = 'rgba(0,0,0,0.6)'; c.shadowBlur = 6; }
-                    if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeHex').value; }
+                    if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeColor').value; }
 
                     let chars = l.text.split('');
                     let isVert = $('gVertical').checked;
@@ -794,7 +831,6 @@
                     ctx.strokeRect(l.textX - 2, l.textY - 2, bounds.w, bounds.h);
                 }
             }
-            triggerAutoSave();
         };
 
         const exec = cb => { const t = sel; updateUI(-1); cb(t); };
@@ -823,7 +859,7 @@
             const isGifBg = mode === 'gif_bg';
             const isGifTrans = mode === 'gif';
             const isMP4 = mode === 'mp4';
-            const bgColor = $('gifBgHex').value;
+            const bgColor = $('gifBgColor').value;
             const dur = getDuration();
             
             let videoExt = (window.MediaRecorder && MediaRecorder.isTypeSupported('video/mp4')) ? '.mp4' : '.webm';
