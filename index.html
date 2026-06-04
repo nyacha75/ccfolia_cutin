@@ -36,10 +36,12 @@
         input[type="checkbox"] { cursor: pointer; vertical-align: middle; margin: 0; }
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; text-align: center; }
-        
-        /* 색상 피커 스타일 (OS 기본 동작) */
-        input[type="color"] { width: 22px; height: 22px; padding: 0; border: 1px solid #ccc; border-radius: 3px; cursor: pointer; background: transparent; vertical-align: middle; }
 
+        /* 컬러 피커 컴팩트 UI (OS 기본 컬러창 + HEX 코드 일체형) */
+        .color-combo { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 3px; background: #fff; height: 22px; width: fit-content; overflow: hidden; transition: 0.2s; }
+        .color-combo input[type="color"] { width: 22px; height: 22px; border: none; padding: 0; margin: 0; cursor: pointer; background: transparent; }
+        .color-combo input[type="text"] { width: 55px; border: none; font-size: 11px; text-transform: uppercase; font-family: monospace; text-align: center; outline: none; padding: 0; }
+        
         /* 버튼 및 레이아웃 */
         .row { display: flex; gap: 5px; margin-bottom: 5px; align-items: center; }
         .btn { background: #fff; color: #333; border: 1px solid #E8D8C8; flex: 1; padding: 8px 6px; font-size: 12px; cursor: pointer; border-radius: 4px; transition: 0.2s; text-align: center; }
@@ -196,27 +198,38 @@
                     <label class="fx-label"><input type="checkbox" id="gShadow" checked onchange="draw(); triggerAutoSave();">그림자</label>
                     <label class="fx-label"><input type="checkbox" id="gStroke" checked onchange="draw(); triggerAutoSave();">테두리</label>
                     
-                    <input type="color" id="gStrokeColor" value="#000000" oninput="draw(); triggerAutoSave();" title="테두리 색상">
-                    <label class="fx-label" style="margin-left:2px;">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw(); triggerAutoSave();" style="width:28px; margin-left:2px; height:22px; border:1px solid #ccc; border-radius:3px;"></label>
+                    <div class="color-combo" title="테두리 색상">
+                        <input type="color" id="gStrokeColor" value="#000000" oninput="$('gStrokeHex').value=this.value; draw(); triggerAutoSave();">
+                        <input type="text" id="gStrokeHex" value="#000000" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { $('gStrokeColor').value=this.value; draw(); triggerAutoSave(); }">
+                    </div>
+                    
+                    <label class="fx-label" style="margin-left:auto;">굵기:<input type="number" id="gStrokeWidth" value="3" onchange="draw(); triggerAutoSave();" style="width:28px; margin-left:2px; height:22px; border:1px solid #ccc; border-radius:3px;"></label>
                 </div>
             </div>
 
             <div class="control-group">
                 <h3>5. 출력 파일 형식</h3>
                 <select id="quality" onchange="toggleBgColor(); triggerAutoSave();" style="width: 100%; font-size: 12px;">
-                    <option value="apng" selected>APNG</option>
-                    <option value="mp4">원본 화질 MP4</option>
-                    <option value="gif">GIF (투명 배경)</option>
-                    <option value="gif_bg">색상 배경 GIF</option>
+                    <option value="apng" selected>APNG(코코포리아 최적화)</option>
+                    <option value="gif">GIF</option>
+                    <option value="mp4">MP4</option>
                 </select>
                 
-                <div id="bgOptionWrapper" class="row" style="display:none; margin-top:5px; padding: 6px; background: #f5f5f5; border-radius: 4px; border: 1px solid #E8D8C8;">
-                    <label style="font-size:11px; margin-right:3px; font-weight:bold;">배경색:</label>
+                <div id="bgOptionWrapper" class="row" style="display:none; margin-top:5px; padding: 6px; background: #f5f5f5; border-radius: 4px; border: 1px solid #E8D8C8; flex-wrap:wrap; gap:6px;">
+                    <div id="transCheckWrapper" style="display:flex; align-items:center;">
+                        <label class="fx-label" style="font-weight:bold; color:#0055FF;"><input type="checkbox" id="gifTransparentCheck" onchange="toggleTrans();">투명</label>
+                    </div>
                     
-                    <input type="color" id="gifBgColor" value="#ffffff" oninput="$('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave();" title="배경 색상">
+                    <div id="colorComboWrapper" style="display:flex; align-items:center; transition:0.2s;">
+                        <label style="font-size:11px; margin-right:3px; font-weight:bold;">배경색:</label>
+                        <div class="color-combo">
+                            <input type="color" id="gifBgColor" value="#ffffff" oninput="$('gifBgHex').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave();" title="배경 색상">
+                            <input type="text" id="gifBgHex" value="#ffffff" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { $('gifBgColor').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave(); }">
+                        </div>
+                    </div>
 
                     <label style="font-size:11px; display:flex; align-items:center; margin-left:auto; cursor:pointer; color:#0055FF; font-weight:bold;">
-                        <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgColor').value='#2b2b2b'; } else { $('gifBgColor').value='#ffffff'; } draw(); triggerAutoSave();">
+                        <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgColor').value='#2b2b2b'; $('gifBgHex').value='#2b2b2b'; } else { $('gifBgColor').value='#ffffff'; $('gifBgHex').value='#ffffff'; } draw(); triggerAutoSave();">
                         코코포 배경
                     </label>
                 </div>
@@ -242,7 +255,6 @@
         
         const ease = t => 1 - Math.pow(1 - t, 3);
 
-        // 아코디언 토글 (상세 조절 펼치기/접기)
         window.toggleAdvAlign = (span) => {
             const wrap = $('advAlignWrapper');
             if(wrap.style.display === 'none') {
@@ -256,7 +268,31 @@
 
         window.toggleBgColor = () => {
             const v = $('quality').value;
-            $('bgOptionWrapper').style.display = (v === 'gif_bg' || v === 'mp4') ? 'flex' : 'none';
+            const wrap = $('bgOptionWrapper');
+            const transOpt = $('transCheckWrapper');
+            
+            if (v === 'gif') {
+                wrap.style.display = 'flex';
+                transOpt.style.display = 'flex';
+            } else if (v === 'mp4') {
+                wrap.style.display = 'flex';
+                transOpt.style.display = 'none';
+                $('gifTransparentCheck').checked = false; // MP4는 투명 불가
+                toggleTrans();
+            } else {
+                wrap.style.display = 'none';
+            }
+        };
+
+        window.toggleTrans = () => {
+            const isTrans = $('gifTransparentCheck').checked;
+            $('gifBgColor').disabled = isTrans;
+            $('gifBgHex').disabled = isTrans;
+            $('ccfoliaBgCheck').disabled = isTrans;
+            $('colorComboWrapper').style.opacity = isTrans ? '0.4' : '1';
+            $('colorComboWrapper').style.pointerEvents = isTrans ? 'none' : 'auto';
+            draw();
+            triggerAutoSave();
         };
 
         window.toggleCustomSpeed = () => {
@@ -297,7 +333,6 @@
             }
         };
 
-        // --- 용량 무제한 IndexedDB 자동 백업 로직 ---
         const localDB = {
             db: null,
             init() {
@@ -349,10 +384,10 @@
                     await localDB.set('ccfolia_cutin_backup', data);
                     const st = $('autoSaveStatus');
                     if (st) { 
-                        st.innerText = "✓ 방금 전 자동 저장됨"; 
-                        setTimeout(() => { if (st.innerText === "✓ 방금 전 자동 저장됨") st.innerText = ""; }, 2500); 
+                        st.innerText = "✓ 방금 전 저장됨"; 
+                        setTimeout(() => { if (st.innerText === "✓ 방금 전 저장됨") st.innerText = ""; }, 2500); 
                     }
-                } catch(e) { console.error("자동 저장 실패", e); }
+                } catch(e) {}
             }, 1000);
         };
 
@@ -372,6 +407,7 @@
                     gShadow: $('gShadow').checked,
                     gStroke: $('gStroke').checked,
                     gStrokeColor: $('gStrokeColor').value,
+                    gStrokeHex: $('gStrokeHex').value,
                     gStrokeWidth: $('gStrokeWidth').value,
                     gVertical: $('gVertical').checked,
                     typeSpeed: $('typeSpeed').value,
@@ -379,7 +415,9 @@
                     animSpeed: $('animSpeed').value,
                     customSpeed: $('customSpeed').value,
                     quality: $('quality').value,
+                    gifTransparentCheck: $('gifTransparentCheck').checked,
                     gifBgColor: $('gifBgColor').value,
+                    gifBgHex: $('gifBgHex').value,
                     ccfoliaBgCheck: $('ccfoliaBgCheck').checked,
                     canvasW: W, canvasH: H
                 }
@@ -403,6 +441,7 @@
                 $('gShadow').checked = !!s.gShadow;
                 $('gStroke').checked = !!s.gStroke;
                 $('gStrokeColor').value = s.gStrokeColor || '#000000';
+                $('gStrokeHex').value = s.gStrokeHex || '#000000';
                 $('gStrokeWidth').value = s.gStrokeWidth || 3;
                 $('gVertical').checked = !!s.gVertical;
                 $('typeSpeed').value = s.typeSpeed || 100;
@@ -410,12 +449,15 @@
                 $('animSpeed').value = s.animSpeed || 2000;
                 $('customSpeed').value = s.customSpeed || 2000;
                 $('quality').value = s.quality || 'apng';
+                $('gifTransparentCheck').checked = !!s.gifTransparentCheck;
                 $('gifBgColor').value = s.gifBgColor || '#ffffff';
+                $('gifBgHex').value = s.gifBgHex || '#ffffff';
                 $('ccfoliaBgCheck').checked = !!s.ccfoliaBgCheck;
 
                 toggleCustomSpeed();
                 toggleCustomTypeSpeed();
                 toggleBgColor();
+                toggleTrans();
 
                 W = canvasEl.width = s.canvasW || 600;
                 H = canvasEl.height = s.canvasH || 800;
@@ -542,7 +584,10 @@
                         ${chars.map((ch, cIdx) => ch === ' ' ? '' : `
                             <div class="char-color-box">
                                 <span>${ch}</span>
-                                <input type="color" value="${l.colors[cIdx]}" oninput="layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave();" title="글자 색상">
+                                <div class="color-combo">
+                                    <input type="color" value="${l.colors[cIdx]}" oninput="this.nextElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave();">
+                                    <input type="text" value="${l.colors[cIdx]}" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { this.previousElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave(); }">
+                                </div>
                             </div>
                         `).join('')}
                     </div>`;
@@ -684,13 +729,8 @@
             else if (type === 'quick') {
                 let totalW = 0, totalH = 0;
                 layers.forEach(ly => { totalW += ly.img.width; totalH += ly.img.height; });
-                if (totalW > totalH) { 
-                    // 가로폭이 더 넓으면 (가로형 이미지들) -> 세로로 배치
-                    act('matchW'); act('distV'); act('crop'); 
-                } else { 
-                    // 세로폭이 더 넓으면 (세로형 이미지들) -> 가로로 배치
-                    act('matchH'); act('distH'); act('crop'); 
-                }
+                if (totalW > totalH) { act('matchW'); act('distV'); act('crop'); } 
+                else { act('matchH'); act('distH'); act('crop'); }
             }
             
             draw();
@@ -793,7 +833,7 @@
                     c.textBaseline = 'top';
                     
                     if ($('gShadow').checked) { c.shadowColor = 'rgba(0,0,0,0.6)'; c.shadowBlur = 6; }
-                    if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeColor').value; }
+                    if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeHex').value; }
 
                     let chars = l.text.split('');
                     let isVert = $('gVertical').checked;
@@ -870,10 +910,9 @@
             
             const mode = $('quality').value;
             const isAPNG = mode === 'apng';
-            const isGifBg = mode === 'gif_bg';
-            const isGifTrans = mode === 'gif';
             const isMP4 = mode === 'mp4';
-            const bgColor = $('gifBgColor').value;
+            const isGifTrans = mode === 'gif' && $('gifTransparentCheck').checked;
+            const bgColor = $('gifBgHex').value;
             const dur = getDuration();
             
             let videoExt = (window.MediaRecorder && MediaRecorder.isTypeSupported('video/mp4')) ? '.mp4' : '.webm';
@@ -984,14 +1023,14 @@
                                 height: eH,
                                 workerScript: workerUrl,
                                 transparent: isGifTrans ? 0xFF00FF : null, 
-                                background: isGifBg ? bgColor : '#ffffff'
+                                background: !isGifTrans ? bgColor : '#ffffff'
                             });
                             
                             for (let i = 0; i < eFrames; i++) {
                                 oCtx.save();
                                 oCtx.clearRect(0, 0, eW, eH); 
                                 
-                                if (isGifBg) {
+                                if (!isGifTrans) {
                                     oCtx.fillStyle = bgColor;
                                     oCtx.fillRect(0, 0, eW, eH);
                                 }
