@@ -79,9 +79,9 @@
     <div style="visibility: hidden; position: absolute; font-family: 'Jua';">.</div>
     <div style="visibility: hidden; position: absolute; font-family: 'Nanum Myeongjo';">.</div>
 
-    <div id="mainHeader" style="width: 1055px; margin-bottom: 20px; transition: width 0.2s ease;">
-        <h2 style="margin: 0 0 10px 0; color: #0055FF; text-align: left;">🌊 [쏘랑] 다인 컷인 에디터</h2>
-        <hr style="border: 0; border-top: 2px solid #E8D8C8; margin: 0;">
+    <div id="mainHeader" style="width: 1055px; max-width: 100%; margin-bottom: 20px; transition: width 0.2s ease;">
+        <h2 style="margin: 0 0 10px 0; color: #0055FF; text-align: center;">🌊 [쏘랑] 다인 컷인 에디터</h2>
+        <hr style="border: 0; border-top: 2px solid #0055FF; margin: 0;">
     </div>
 
     <div class="container">
@@ -137,7 +137,7 @@
                         <button class="btn" onclick="act('distH')">↔️ 가로 간격 정렬</button>
                         <button class="btn" onclick="act('distV')">↕️ 세로 간격 정렬</button>
                         <div style="display:flex; justify-content:center; align-items:center; background:#fff; border:1px solid #E8D8C8; border-radius:4px; height: 32px;">
-                            <label style="font-size:11px; display:flex; align-items:center; margin:0; cursor:pointer;">이미지 간격: 
+                            <label style="font-size:11px; display:flex; align-items:center; margin:0; cursor:pointer; white-space:nowrap;">이미지 간격: 
                                 <input type="number" id="gap" value="20" onchange="triggerAutoSave()" style="width:35px; margin-left:4px; height:20px; border:1px solid #ccc; border-radius:3px; padding:0;">
                             </label>
                         </div>
@@ -148,8 +148,8 @@
             <div class="control-group" style="flex:1; display:flex; flex-direction:column;">
                 <h3>3. 레이어</h3>
                 <div class="row" style="margin-bottom:8px;">
-                    <label style="font-size:12px; width:80px;">애니메이션 속도:</label>
-                    <select id="animSpeed" onchange="toggleCustomSpeed(); draw();" style="width:110px; font-size:12px; flex:none;">
+                    <label style="font-size:12px; width:95px; white-space:nowrap;">애니메이션 속도:</label>
+                    <select id="animSpeed" onchange="toggleCustomSpeed(); draw();" style="flex:1; font-size:12px;">
                         <option value="1000">빠르게</option>
                         <option value="2000" selected>기본</option>
                         <option value="3000">느리게</option>
@@ -164,7 +164,7 @@
                 <div id="layerList" class="layer-list"></div>
 
                 <div class="row" style="margin-top:8px;">
-                    <label style="font-size:12px; width:80px;">추가 효과:</label>
+                    <label style="font-size:12px; width:95px; white-space:nowrap;">추가 효과:</label>
                     <select id="globalEffect" onchange="draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
                         <option value="none" selected>효과 없음</option>
                         <option value="trace">1. 각 이미지 테두리 빛 궤적 (진행 중)</option>
@@ -178,12 +178,12 @@
             <div class="control-group">
                 <h3>4. 타이포</h3>
                 <div class="row">
-                    <label style="font-size:12px; width:70px;">파일 업로드:</label>
+                    <label style="font-size:12px; width:75px;">파일 업로드:</label>
                     <input type="file" id="fontInput" multiple accept=".ttf,.otf,.woff,.woff2" style="flex:1;">
                 </div>
                 <div class="row">
-                    <label style="font-size:12px; width:70px;">타이핑 속도:</label>
-                    <select id="typeSpeed" onchange="toggleCustomTypeSpeed(); draw(); triggerAutoSave();" style="width:110px; font-size:12px; flex:none;">
+                    <label style="font-size:12px; width:75px;">타이핑 속도:</label>
+                    <select id="typeSpeed" onchange="toggleCustomTypeSpeed(); draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
                         <option value="50">빠르게</option>
                         <option value="100" selected>기본</option>
                         <option value="200">느리게</option>
@@ -195,7 +195,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <label style="font-size:12px; width:70px;">적용 폰트:</label>
+                    <label style="font-size:12px; width:75px;">적용 폰트:</label>
                     <select id="globalFont" onchange="draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
                         <option value="Black Han Sans" selected>블랙한산스</option>
                         <option value="Jua">주아체</option>
@@ -227,14 +227,13 @@
             <div class="control-group">
                 <h3>5. 출력 파일 형식</h3>
                 <div class="row" style="flex-wrap: nowrap; gap: 8px;">
-                    <select id="quality" onchange="toggleBgColor(); triggerAutoSave();" style="width: 150px; font-size: 12px; flex-shrink: 0;">
+                    <select id="quality" onchange="toggleBgColor(); triggerAutoSave();" style="width: 225px; font-size: 12px; flex-shrink: 0;">
                         <option value="apng" selected>APNG(코코포리아 최적화)</option>
                         <option value="gif">GIF</option>
-                        <option value="mp4">MP4</option>
+                        <option value="mp4">MP4 (원본 화질)</option>
                     </select>
                     
                     <div id="bgOptionWrapper" style="display:none; align-items:center; gap:8px; background:#f5f5f5; border-radius:4px; border:1px solid #E8D8C8; padding:3px 6px; flex:1; min-width:0;">
-                        
                         <div id="colorComboWrapper" style="display:flex; align-items:center; transition:0.2s;">
                             <div class="color-combo">
                                 <input type="color" id="gifBgColor" value="#ffffff" oninput="$('gifBgHex').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave();" title="배경 색상">
@@ -276,165 +275,60 @@
 
         window.toggleAdvAlign = (span) => {
             const wrap = $('advAlignWrapper');
-            if(wrap.style.display === 'none') {
-                wrap.style.display = 'block';
-                span.innerText = '상세 조절 접기 ▲';
-            } else {
-                wrap.style.display = 'none';
-                span.innerText = '상세 조절 펼치기 ▼';
-            }
+            if(wrap.style.display === 'none') { wrap.style.display = 'block'; span.innerText = '상세 조절 접기 ▲'; } 
+            else { wrap.style.display = 'none'; span.innerText = '상세 조절 펼치기 ▼'; }
         };
 
         window.toggleBgColor = () => {
-            const v = $('quality').value;
-            const wrap = $('bgOptionWrapper');
-            const transOpt = $('transCheckWrapper');
-            
-            if (v === 'gif') {
-                wrap.style.display = 'flex';
-                transOpt.style.display = 'flex';
-            } else if (v === 'mp4') {
-                wrap.style.display = 'flex';
-                transOpt.style.display = 'none';
-                $('gifTransparentCheck').checked = false; 
-                toggleTrans();
-            } else {
-                wrap.style.display = 'none';
-            }
+            const v = $('quality').value, wrap = $('bgOptionWrapper'), transOpt = $('transCheckWrapper');
+            if (v === 'gif') { wrap.style.display = 'flex'; transOpt.style.display = 'flex'; } 
+            else if (v === 'mp4') { wrap.style.display = 'flex'; transOpt.style.display = 'none'; $('gifTransparentCheck').checked = false; toggleTrans(); } 
+            else { wrap.style.display = 'none'; }
         };
 
         window.toggleTrans = () => {
             const isTrans = $('gifTransparentCheck').checked;
-            $('gifBgColor').disabled = isTrans;
-            $('gifBgHex').disabled = isTrans;
-            $('ccfoliaBgCheck').disabled = isTrans;
-            $('colorComboWrapper').style.opacity = isTrans ? '0.4' : '1';
-            $('colorComboWrapper').style.pointerEvents = isTrans ? 'none' : 'auto';
-            draw();
-            triggerAutoSave();
+            $('gifBgColor').disabled = isTrans; $('gifBgHex').disabled = isTrans; $('ccfoliaBgCheck').disabled = isTrans;
+            $('colorComboWrapper').style.opacity = isTrans ? '0.4' : '1'; $('colorComboWrapper').style.pointerEvents = isTrans ? 'none' : 'auto';
+            draw(); triggerAutoSave();
         };
 
-        window.toggleCustomSpeed = () => {
-            $('customSpeedWrapper').style.display = $('animSpeed').value === 'custom' ? 'flex' : 'none';
-        };
+        window.toggleCustomSpeed = () => $('customSpeedWrapper').style.display = $('animSpeed').value === 'custom' ? 'flex' : 'none';
+        window.toggleCustomTypeSpeed = () => $('customTypeSpeedWrapper').style.display = $('typeSpeed').value === 'custom' ? 'flex' : 'none';
 
-        window.toggleCustomTypeSpeed = () => {
-            $('customTypeSpeedWrapper').style.display = $('typeSpeed').value === 'custom' ? 'flex' : 'none';
-        };
-
-        const getDuration = () => {
-            let v = $('animSpeed').value;
-            return v === 'custom' ? (parseInt($('customSpeed').value) || 2000) : parseInt(v);
-        };
-
-        const getTypeSpeedMs = () => {
-            let v = $('typeSpeed').value;
-            return v === 'custom' ? (parseInt($('customTypeSpeed').value) || 100) : parseInt(v);
-        };
-        
-        const getFontStr = () => {
-            const isItalic = $('gItalic').checked ? 'italic ' : '';
-            const isBold = $('gBold').checked ? 'bold ' : '';
-            const fSize = parseInt($('gFontSize').value) || 60;
-            return `${isItalic}${isBold}${fSize}px "${$('globalFont').value}"`;
-        };
+        const getDuration = () => $('animSpeed').value === 'custom' ? (parseInt($('customSpeed').value) || 2000) : parseInt($('animSpeed').value);
+        const getTypeSpeedMs = () => $('typeSpeed').value === 'custom' ? (parseInt($('customTypeSpeed').value) || 100) : parseInt($('typeSpeed').value);
+        const getFontStr = () => `${$('gItalic').checked ? 'italic ' : ''}${$('gBold').checked ? 'bold ' : ''}${parseInt($('gFontSize').value) || 60}px "${$('globalFont').value}"`;
 
         const getTextBounds = (text, fSize) => {
             if (!text) return { w: 0, h: 0 };
             ctx.font = getFontStr();
             if ($('gVertical').checked) {
-                let w = 0;
-                let chars = text.split('');
-                chars.forEach(c => w = Math.max(w, ctx.measureText(c).width));
+                let w = 0, chars = text.split(''); chars.forEach(c => w = Math.max(w, ctx.measureText(c).width));
                 return { w: w + 4, h: chars.length * (fSize * 1.1) + 4 };
-            } else {
-                return { w: ctx.measureText(text).width + 4, h: fSize + 10 };
-            }
+            } else return { w: ctx.measureText(text).width + 4, h: fSize + 10 };
         };
 
         // --- 데이터베이스 & 자동저장 ---
         const localDB = {
             db: null,
-            init() {
-                return new Promise((res, rej) => {
-                    const req = indexedDB.open('CCfoliaCutinDB', 1);
-                    req.onupgradeneeded = e => {
-                        if (!e.target.result.objectStoreNames.contains('data')) {
-                            e.target.result.createObjectStore('data');
-                        }
-                    };
-                    req.onsuccess = e => { this.db = e.target.result; res(); };
-                    req.onerror = rej;
-                });
-            },
-            set(key, val) {
-                return new Promise((res) => {
-                    if (!this.db) return res();
-                    const tx = this.db.transaction('data', 'readwrite');
-                    tx.objectStore('data').put(val, key);
-                    tx.oncomplete = res;
-                });
-            },
-            get(key) {
-                return new Promise((res) => {
-                    if (!this.db) return res(null);
-                    const tx = this.db.transaction('data', 'readonly');
-                    const req = tx.objectStore('data').get(key);
-                    req.onsuccess = () => res(req.result);
-                    req.onerror = () => res(null);
-                });
-            }
+            init() { return new Promise((res, rej) => { const req = indexedDB.open('CCfoliaCutinDB', 1); req.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains('data')) e.target.result.createObjectStore('data'); }; req.onsuccess = e => { this.db = e.target.result; res(); }; req.onerror = rej; }); },
+            set(key, val) { return new Promise((res) => { if (!this.db) return res(); const tx = this.db.transaction('data', 'readwrite'); tx.objectStore('data').put(val, key); tx.oncomplete = res; }); },
+            get(key) { return new Promise((res) => { if (!this.db) return res(null); const tx = this.db.transaction('data', 'readonly'); const req = tx.objectStore('data').get(key); req.onsuccess = () => res(req.result); req.onerror = () => res(null); }); }
         };
 
         let autoSaveTimer;
         window.triggerAutoSave = () => {
-            if(isPlay) return;
-            clearTimeout(autoSaveTimer);
+            if(isPlay) return; clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(async () => {
-                try {
-                    await localDB.set('ccfolia_cutin_backup', JSON.stringify(getProjectData()));
-                    const st = $('autoSaveStatus');
-                    if (st) { 
-                        st.innerText = "✓ 방금 전 저장됨"; 
-                        setTimeout(() => { if (st.innerText === "✓ 방금 전 저장됨") st.innerText = ""; }, 2500); 
-                    }
-                } catch(e) {}
+                try { await localDB.set('ccfolia_cutin_backup', JSON.stringify(getProjectData())); const st = $('autoSaveStatus'); if (st) { st.innerText = "✓ 방금 전 저장됨"; setTimeout(() => { if (st.innerText === "✓ 방금 전 저장됨") st.innerText = ""; }, 2500); } } catch(e) {}
             }, 1000);
         };
 
-        const getProjectData = () => {
-            return {
-                layers: layers.map(l => ({
-                    src: l.src, name: l.name, anim: l.anim, scale: l.scale,
-                    x: l.x, y: l.y, text: l.text, colors: l.colors,
-                    textX: l.textX, textY: l.textY
-                })),
-                settings: {
-                    gap: $('gap').value,
-                    globalFont: $('globalFont').value,
-                    gFontSize: $('gFontSize').value,
-                    gBold: $('gBold').checked,
-                    gItalic: $('gItalic').checked,
-                    gShadow: $('gShadow').checked,
-                    gStroke: $('gStroke').checked,
-                    gStrokeColor: $('gStrokeColor').value,
-                    gStrokeHex: $('gStrokeHex').value,
-                    gStrokeWidth: $('gStrokeWidth').value,
-                    gVertical: $('gVertical').checked,
-                    typeSpeed: $('typeSpeed').value,
-                    customTypeSpeed: $('customTypeSpeed').value,
-                    animSpeed: $('animSpeed').value,
-                    customSpeed: $('customSpeed').value,
-                    globalEffect: $('globalEffect').value,
-                    quality: $('quality').value,
-                    gifTransparentCheck: $('gifTransparentCheck').checked,
-                    gifBgColor: $('gifBgColor').value,
-                    gifBgHex: $('gifBgHex').value,
-                    ccfoliaBgCheck: $('ccfoliaBgCheck').checked,
-                    canvasW: W, canvasH: H
-                }
-            };
-        };
+        const getProjectData = () => ({
+            layers: layers.map(l => ({ src: l.src, name: l.name, anim: l.anim, scale: l.scale, x: l.x, y: l.y, text: l.text, colors: l.colors, textX: l.textX, textY: l.textY })),
+            settings: { gap: $('gap').value, globalFont: $('globalFont').value, gFontSize: $('gFontSize').value, gBold: $('gBold').checked, gItalic: $('gItalic').checked, gShadow: $('gShadow').checked, gStroke: $('gStroke').checked, gStrokeColor: $('gStrokeColor').value, gStrokeHex: $('gStrokeHex').value, gStrokeWidth: $('gStrokeWidth').value, gVertical: $('gVertical').checked, typeSpeed: $('typeSpeed').value, customTypeSpeed: $('customTypeSpeed').value, animSpeed: $('animSpeed').value, customSpeed: $('customSpeed').value, globalEffect: $('globalEffect').value, quality: $('quality').value, gifTransparentCheck: $('gifTransparentCheck').checked, gifBgColor: $('gifBgColor').value, gifBgHex: $('gifBgHex').value, ccfoliaBgCheck: $('ccfoliaBgCheck').checked, canvasW: W, canvasH: H }
+        });
 
         const restoreProjectData = (data) => {
             const s = data.settings;
@@ -444,211 +338,107 @@
                 ['gStrokeColor', 'gStrokeHex', 'gifBgColor', 'gifBgHex'].forEach(id => { if(s[id]!==undefined) $(id).value = s[id]; });
                 
                 if (s.globalFont && !Array.from($('globalFont').options).some(opt => opt.value === s.globalFont)) {
-                    const opt = document.createElement('option');
-                    opt.value = opt.text = s.globalFont;
-                    $('globalFont').appendChild(opt);
-                    customFonts.push(s.globalFont);
+                    const opt = document.createElement('option'); opt.value = opt.text = s.globalFont; $('globalFont').appendChild(opt); customFonts.push(s.globalFont);
                 }
                 $('globalFont').value = s.globalFont || 'Black Han Sans';
-                
+                W = canvasEl.width = s.canvasW || 600; H = canvasEl.height = s.canvasH || 800;
+                if ($('mainHeader')) $('mainHeader').style.width = (W + 455) + 'px';
+
                 $('customSpeedWrapper').style.display = s.animSpeed === 'custom' ? 'flex' : 'none';
                 $('customTypeSpeedWrapper').style.display = s.typeSpeed === 'custom' ? 'flex' : 'none';
-                toggleBgColor();
-                toggleTrans();
-
-                W = canvasEl.width = s.canvasW || 600;
-                H = canvasEl.height = s.canvasH || 800;
-                if ($('mainHeader')) $('mainHeader').style.width = (W + 455) + 'px';
+                toggleBgColor(); toggleTrans();
             }
 
-            layers = [];
-            let loadedCount = 0;
+            layers = []; let loadedCount = 0;
             if(data.layers && data.layers.length > 0) {
                 data.layers.forEach((lData, idx) => {
                     const img = new Image();
-                    img.onload = () => {
-                        layers[idx] = { ...lData, img: img }; 
-                        loadedCount++;
-                        if(loadedCount === data.layers.length) {
-                            updateUI(layers.length - 1);
-                        }
-                    };
+                    img.onload = () => { layers[idx] = { ...lData, img: img }; loadedCount++; if(loadedCount === data.layers.length) updateUI(layers.length - 1); };
                     img.src = lData.src;
                 });
-            } else {
-                updateUI(-1);
-            }
+            } else updateUI(-1);
         };
 
         window.saveProjectFile = () => {
-            let fn = prompt("저장할 프로젝트 파일명:", "FebCryptbound_fighting")?.trim(); 
-            if (!fn) return; 
-            if (!fn.endsWith('.json')) fn += '.json';
-
-            const data = JSON.stringify(getProjectData());
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(new Blob([data], { type: "application/json" }));
-            a.download = fn;
-            a.click();
+            let fn = prompt("저장할 프로젝트 파일명:", "FebCryptbound_fighting")?.trim(); if (!fn) return; if (!fn.endsWith('.json')) fn += '.json';
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(getProjectData())], { type: "application/json" })); a.download = fn; a.click();
         };
 
         window.loadProjectFile = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = ev => {
-                try {
-                    restoreProjectData(JSON.parse(ev.target.result));
-                } catch(err) {
-                    alert("프로젝트 파일을 불러오는 중 오류가 발생했습니다.");
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
+            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
+            reader.onload = ev => { try { restoreProjectData(JSON.parse(ev.target.result)); } catch(err) { alert("파일 오류"); } };
+            reader.readAsText(file); e.target.value = '';
         };
 
         window.addEventListener('DOMContentLoaded', async () => {
-            try {
-                await localDB.init();
-                const backup = await localDB.get('ccfolia_cutin_backup');
-                if (backup) {
-                    const data = JSON.parse(backup);
-                    if (data && data.layers && data.layers.length > 0) {
-                        if (confirm("이전에 작업하던 데이터가 남아있습니다. 복구하시겠습니까?")) {
-                            restoreProjectData(data);
-                        } else {
-                            localDB.remove('ccfolia_cutin_backup');
-                        }
-                    }
-                }
+            try { await localDB.init(); const backup = await localDB.get('ccfolia_cutin_backup');
+                if (backup) { const data = JSON.parse(backup); if (data && data.layers && data.layers.length > 0 && confirm("이전 작업 데이터를 복구하시겠습니까?")) restoreProjectData(data); }
             } catch(e) {}
         });
 
-        // --- 메인 로직 ---
+        // --- UI & Rendering ---
         $('fontInput').onchange = async e => {
             for (let file of e.target.files) {
                 try {
-                    const fontName = file.name.split('.')[0];
-                    const font = new FontFace(fontName, await file.arrayBuffer());
-                    await font.load();
-                    document.fonts.add(font);
-                    if(!customFonts.includes(fontName)) {
-                        customFonts.push(fontName);
-                        const opt = document.createElement('option');
-                        opt.value = opt.text = fontName;
-                        $('globalFont').appendChild(opt);
-                        $('globalFont').value = fontName;
-                    }
-                    draw();
-                    triggerAutoSave();
-                } catch (err) { alert('폰트 로드 실패: ' + file.name); }
+                    const fontName = file.name.split('.')[0]; const font = new FontFace(fontName, await file.arrayBuffer()); await font.load(); document.fonts.add(font);
+                    if(!customFonts.includes(fontName)) { customFonts.push(fontName); const opt = document.createElement('option'); opt.value = opt.text = fontName; $('globalFont').appendChild(opt); $('globalFont').value = fontName; }
+                    draw(); triggerAutoSave();
+                } catch (err) { alert('폰트 로드 실패'); }
             }
             e.target.value = '';
         };
 
         const updateUI = (idx = sel) => {
-            sel = idx;
-            const list = $('layerList');
-            list.innerHTML = layers.length ? '' : '<p style="font-size:12px;text-align:center;color:#777;margin-top:10px;">이미지를 추가하세요.</p>';
-
+            sel = idx; const list = $('layerList'); list.innerHTML = layers.length ? '' : '<p style="font-size:12px;text-align:center;color:#777;margin-top:10px;">이미지를 추가하세요.</p>';
             for (let i = layers.length - 1; i >= 0; i--) {
-                const l = layers[i];
-                const div = document.createElement('div');
-                div.className = `layer-item ${i === sel ? 'active' : ''}`;
-                div.draggable = true;
-                
+                const l = layers[i], div = document.createElement('div'); div.className = `layer-item ${i === sel ? 'active' : ''}`; div.draggable = true;
                 div.onclick = e => { if (!['SELECT','BUTTON','INPUT'].includes(e.target.tagName)) updateUI(i); };
                 div.ondragstart = e => { e.dataTransfer.setData('idx', i); setTimeout(() => div.style.opacity = '0.5', 0); };
-                div.ondragend = () => div.style.opacity = '1';
-                div.ondragover = e => { e.preventDefault(); div.classList.add('drag-over'); };
+                div.ondragend = () => div.style.opacity = '1'; div.ondragover = e => { e.preventDefault(); div.classList.add('drag-over'); };
                 div.ondragleave = () => div.classList.remove('drag-over');
                 div.ondrop = e => {
-                    e.preventDefault(); div.classList.remove('drag-over');
-                    const from = parseInt(e.dataTransfer.getData('idx'));
-                    if (from !== i && !isNaN(from)) {
-                        const activeL = layers[sel];
-                        layers.splice(i, 0, layers.splice(from, 1)[0]);
-                        updateUI(layers.indexOf(activeL));
-                        triggerAutoSave();
-                    }
+                    e.preventDefault(); div.classList.remove('drag-over'); const from = parseInt(e.dataTransfer.getData('idx'));
+                    if (from !== i && !isNaN(from)) { const activeL = layers[sel]; layers.splice(i, 0, layers.splice(from, 1)[0]); updateUI(layers.indexOf(activeL)); triggerAutoSave(); }
                 };
 
                 let colorPickersHTML = '';
                 if(l.text) {
-                    const chars = l.text.split('');
-                    while(l.colors.length < chars.length) l.colors.push('#ffffff');
-                    
+                    const chars = l.text.split(''); while(l.colors.length < chars.length) l.colors.push('#ffffff');
                     colorPickersHTML = `<div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; padding-top:5px; border-top:1px dashed #E8D8C8;">
                         ${chars.map((ch, cIdx) => ch === ' ' ? '' : `
-                            <div class="char-color-box">
-                                <span>${ch}</span>
+                            <div class="char-color-box"><span>${ch}</span>
                                 <div class="color-combo">
                                     <input type="color" value="${l.colors[cIdx]}" oninput="this.nextElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave();">
                                     <input type="text" value="${l.colors[cIdx]}" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { this.previousElementSibling.value=this.value; layers[${i}].colors[${cIdx}]=this.value; draw(); triggerAutoSave(); }">
                                 </div>
                             </div>
-                        `).join('')}
-                    </div>`;
+                        `).join('')}</div>`;
                 }
 
                 div.innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; font-weight:bold; font-size:13px;">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <img src="${l.src}" class="thumb"> 
-                            <span style="max-width:80px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${l.name}</span>
-                        </div>
-                        <div style="display:flex; gap:3px;">
-                            <button class="l-btn" onclick="move(${i},1,event)">▲</button>
-                            <button class="l-btn" onclick="move(${i},-1,event)">▼</button>
-                            <button class="l-btn del" onclick="del(${i},event)">삭제</button>
-                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;"><img src="${l.src}" class="thumb"> <span style="max-width:80px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${l.name}</span></div>
+                        <div style="display:flex; gap:3px;"><button class="l-btn" onclick="move(${i},1,event)">▲</button><button class="l-btn" onclick="move(${i},-1,event)">▼</button><button class="l-btn del" onclick="del(${i},event)">삭제</button></div>
                     </div>
                     <div class="row">
                         <select onchange="layers[${i}].anim=this.value; updateUI(${i}); triggerAutoSave();" style="flex:1;">
-                            ${['fade:페이드인', 'slideLeft:⬅️ 왼 슬라이드', 'slideRight:➡️ 오른 슬라이드', 'slideUp:⬆️ 아래 슬라이드', 'slideDown:⬇️ 위 슬라이드', 'zoomIn:🔍 확대'].map(o => {
-                                const [v, t] = o.split(':'); return `<option value="${v}" ${l.anim===v?'selected':''}>${t}</option>`;
-                            }).join('')}
+                            ${['fade:페이드인', 'slideLeft:⬅️ 왼 슬라이드', 'slideRight:➡️ 오른 슬라이드', 'slideUp:⬆️ 아래 슬라이드', 'slideDown:⬇️ 위 슬라이드', 'zoomIn:🔍 확대'].map(o => { const [v, t] = o.split(':'); return `<option value="${v}" ${l.anim===v?'selected':''}>${t}</option>`; }).join('')}
                         </select>
                     </div>
-                    <div class="row" style="margin-top:5px;">
-                        <input type="text" placeholder="텍스트 입력" value="${l.text}" oninput="layers[${i}].text=this.value; draw(); triggerAutoSave();" onchange="updateUI(${i});" style="flex:1;">
-                    </div>
+                    <div class="row" style="margin-top:5px;"><input type="text" placeholder="텍스트 입력" value="${l.text}" oninput="layers[${i}].text=this.value; draw(); triggerAutoSave();" onchange="updateUI(${i});" style="flex:1;"></div>
                     ${colorPickersHTML}
-                `;
-                list.appendChild(div);
-            }
-            draw();
+                `; list.appendChild(div);
+            } draw();
         };
 
         $('imageInput').onchange = e => {
-            Array.from(e.target.files).forEach(file => {
-                const r = new FileReader();
-                r.onload = ev => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const isEven = layers.length % 2 === 0;
-                        const defaultAnim = isEven ? 'slideLeft' : 'slideRight';
-                        const scale = 0.5;
-                        const scaledW = img.width * scale;
-                        const scaledH = img.height * scale;
-                        const ix = W/2 - scaledW/2;
-                        const iy = H/2 - scaledH/2;
-                        
-                        layers.push({ 
-                            img, src: ev.target.result, name: file.name, 
-                            anim: defaultAnim, 
-                            scale: scale, x: ix, y: iy,
-                            text: '', colors: [],
-                            textX: ix + scaledW/2 - 80, textY: iy + scaledH/2 - 30 
-                        });
-                        updateUI(layers.length - 1);
-                        triggerAutoSave();
-                    };
-                    img.src = ev.target.result;
-                };
-                r.readAsDataURL(file);
-            });
-            e.target.value = '';
+            Array.from(e.target.files).forEach(file => { const r = new FileReader();
+                r.onload = ev => { const img = new Image(); img.onload = () => {
+                        const sc = 0.5; layers.push({ img, src: ev.target.result, name: file.name, anim: layers.length % 2 === 0 ? 'slideLeft' : 'slideRight', scale: sc, x: W/2 - (img.width*sc)/2, y: H/2 - (img.height*sc)/2, text: '', colors: [], textX: W/2 - (img.width*sc)/2 - 80, textY: H/2 - (img.height*sc)/2 - 30 });
+                        updateUI(layers.length - 1); triggerAutoSave();
+                    }; img.src = ev.target.result;
+                }; r.readAsDataURL(file);
+            }); e.target.value = '';
         };
 
         window.move = (i, d, e) => { e.stopPropagation(); const t = i + d; if (t >= 0 && t < layers.length) { [layers[i], layers[t]] = [layers[t], layers[i]]; updateUI(sel === i ? t : (sel === t ? i : sel)); triggerAutoSave(); } };
@@ -659,505 +449,204 @@
             const gap = +$('gap').value || 0, l = layers[sel];
             
             if (type === 'crop') {
-                let mX = Infinity, mY = Infinity, xX = -Infinity, xY = -Infinity;
-                const fSize = parseInt($('gFontSize').value) || 60;
-                
+                let mX = Infinity, mY = Infinity, xX = -Infinity, xY = -Infinity; const fSize = parseInt($('gFontSize').value) || 60;
                 layers.forEach(ly => { 
-                    const w = ly.img.width * ly.scale;
-                    const h = ly.img.height * ly.scale; 
-                    const bounds = getTextBounds(ly.text, fSize);
-                    
-                    let minX = Math.min(ly.x, ly.text ? ly.textX : Infinity);
-                    let minY = Math.min(ly.y, ly.text ? ly.textY : Infinity);
-                    let maxX = Math.max(ly.x + w, ly.text ? ly.textX + bounds.w : -Infinity);
-                    let maxY = Math.max(ly.y + h, ly.text ? ly.textY + bounds.h : -Infinity);
-                    
-                    if(ly.anim === 'slideLeft') minX -= 70;
-                    if(ly.anim === 'slideRight') maxX += 70;
-                    if(ly.anim === 'slideUp') maxY += 70;
-                    if(ly.anim === 'slideDown') minY -= 70;
-                    
-                    mX = Math.min(mX, minX); mY = Math.min(mY, minY); 
-                    xX = Math.max(xX, maxX); xY = Math.max(xY, maxY); 
+                    const w = ly.img.width * ly.scale, h = ly.img.height * ly.scale, bounds = getTextBounds(ly.text, fSize);
+                    let minX = Math.min(ly.x, ly.text ? ly.textX : Infinity), minY = Math.min(ly.y, ly.text ? ly.textY : Infinity), maxX = Math.max(ly.x + w, ly.text ? ly.textX + bounds.w : -Infinity), maxY = Math.max(ly.y + h, ly.text ? ly.textY + bounds.h : -Infinity);
+                    if(ly.anim === 'slideLeft') minX -= 70; if(ly.anim === 'slideRight') maxX += 70; if(ly.anim === 'slideUp') maxY += 70; if(ly.anim === 'slideDown') minY -= 70;
+                    mX = Math.min(mX, minX); mY = Math.min(mY, minY); xX = Math.max(xX, maxX); xY = Math.max(xY, maxY); 
                 });
-                
                 if(mX === Infinity) return;
-                
-                const cx = W / 2, cy = H / 2;
-                const newW = Math.max(100, Math.ceil(Math.max(cx - mX, xX - cx) + 10) * 2);
-                const newH = Math.max(100, Math.ceil(Math.max(cy - mY, xY - cy) + 10) * 2);
-                const shiftX = newW / 2 - cx;
-                const shiftY = newH / 2 - cy;
-                
-                W = canvasEl.width = newW; 
-                H = canvasEl.height = newH;
+                const cx = W / 2, cy = H / 2, newW = Math.max(100, Math.ceil(Math.max(cx - mX, xX - cx) + 10) * 2), newH = Math.max(100, Math.ceil(Math.max(cy - mY, xY - cy) + 10) * 2);
+                W = canvasEl.width = newW; H = canvasEl.height = newH;
                 if ($('mainHeader')) $('mainHeader').style.width = (W + 455) + 'px';
-                
-                layers.forEach(ly => { ly.x += shiftX; ly.y += shiftY; ly.textX += shiftX; ly.textY += shiftY; });
+                layers.forEach(ly => { ly.x += newW/2 - cx; ly.y += newH/2 - cy; ly.textX += newW/2 - cx; ly.textY += newH/2 - cy; });
             }
-            else if (type === 'matchH' && layers.length > 1 && l) { 
-                const tH = l.img.height * l.scale; 
-                layers.forEach(ly => { 
-                    if(ly !== l) {
-                        const oldSc = ly.scale; ly.scale = tH / ly.img.height; 
-                        const ratio = ly.scale / oldSc; ly.textX = ly.x + (ly.textX - ly.x) * ratio; ly.textY = ly.y + (ly.textY - ly.y) * ratio;
-                    }
-                }); 
-            }
-            else if (type === 'matchW' && layers.length > 1 && l) { 
-                const tW = l.img.width * l.scale; 
-                layers.forEach(ly => { 
-                    if(ly !== l) {
-                        const oldSc = ly.scale; ly.scale = tW / ly.img.width; 
-                        const ratio = ly.scale / oldSc; ly.textX = ly.x + (ly.textX - ly.x) * ratio; ly.textY = ly.y + (ly.textY - ly.y) * ratio;
-                    }
-                }); 
+            else if (type === 'matchH' || type === 'matchW') {
+                if (layers.length > 1 && l) {
+                    const isH = type === 'matchH', target = isH ? l.img.height : l.img.width;
+                    layers.forEach(ly => { if(ly !== l) { const oldSc = ly.scale; ly.scale = target / (isH ? ly.img.height : ly.img.width); const r = ly.scale / oldSc; ly.textX = ly.x + (ly.textX - ly.x) * r; ly.textY = ly.y + (ly.textY - ly.y) * r; } }); 
+                }
             }
             else if (type === 'distH' || type === 'distV') {
-                const isH = type === 'distH';
-                const totalSize = layers.reduce((a, ly) => a + ly.img[isH?'width':'height'] * ly.scale, 0) + gap * (layers.length - 1);
-                let cur = ( (isH?W:H) - totalSize ) / 2;
-                
+                const isH = type === 'distH', tSz = layers.reduce((a, ly) => a + ly.img[isH?'width':'height'] * ly.scale, 0) + gap * (layers.length - 1);
+                let cur = ((isH?W:H) - tSz) / 2;
                 layers.forEach(ly => { 
-                    const dx = isH ? cur - ly.x : ((W - ly.img.width*ly.scale)/2) - ly.x;
-                    const dy = isH ? ((H - ly.img.height*ly.scale)/2) - ly.y : cur - ly.y;
-                    ly.x += dx; ly.y += dy; ly.textX += dx; ly.textY += dy;
-                    cur += ly.img[isH?'width':'height']*ly.scale + gap; 
+                    const dx = isH ? cur - ly.x : ((W - ly.img.width*ly.scale)/2) - ly.x, dy = isH ? ((H - ly.img.height*ly.scale)/2) - ly.y : cur - ly.y;
+                    ly.x += dx; ly.y += dy; ly.textX += dx; ly.textY += dy; cur += ly.img[isH?'width':'height']*ly.scale + gap; 
                 });
             }
-            else if (type === 'quick') {
-                let totalW = 0, totalH = 0;
-                layers.forEach(ly => { totalW += ly.img.width; totalH += ly.img.height; });
-                if (totalW > totalH) { act('matchW'); act('distV'); act('crop'); } 
-                else { act('matchH'); act('distH'); act('crop'); }
+            else if (type.startsWith('quick')) {
+                let tW = 0, tH = 0; layers.forEach(ly => { tW += ly.img.width; tH += ly.img.height; });
+                const doV = type === 'quickV' || (type === 'quick' && tW > tH);
+                act(doV ? 'matchW' : 'matchH'); act(doV ? 'distV' : 'distH'); act('crop');
             }
-            
-            draw();
-            triggerAutoSave();
+            draw(); triggerAutoSave();
         };
 
         const getPos = e => { const r = canvasEl.getBoundingClientRect(); return { x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height) }; };
         
         canvasEl.onwheel = e => { 
-            if(isPlay || !layers[sel]) return; 
-            e.preventDefault(); 
-            const l = layers[sel];
-            const oldSc = l.scale;
-            l.scale = Math.max(0.05, l.scale + (e.deltaY < 0 ? 0.05 : -0.05)); 
-            
-            const ratio = l.scale / oldSc;
-            l.textX = l.x + (l.textX - l.x) * ratio;
-            l.textY = l.y + (l.textY - l.y) * ratio;
-            draw(); 
-            triggerAutoSave();
+            if(isPlay || !layers[sel]) return; e.preventDefault(); const l = layers[sel], oldSc = l.scale;
+            l.scale = Math.max(0.05, l.scale + (e.deltaY < 0 ? 0.05 : -0.05)); const r = l.scale / oldSc; l.textX = l.x + (l.textX - l.x) * r; l.textY = l.y + (l.textY - l.y) * r;
+            draw(); triggerAutoSave();
         };
         
         canvasEl.onmousedown = e => {
-            if (isPlay) return; 
-            const {x, y} = getPos(e), l = layers[sel];
-            const fSize = parseInt($('gFontSize').value) || 60;
-            
-            if (l) { 
-                const w = l.img.width*l.scale, h = l.img.height*l.scale; 
-                if (x >= l.x+w-12 && x <= l.x+w+12 && y >= l.y+h-12 && y <= l.y+h+12) return isRes = true; 
-            }
-            
+            if (isPlay) return; const {x, y} = getPos(e), l = layers[sel], fSize = parseInt($('gFontSize').value) || 60;
+            if (l) { const w = l.img.width*l.scale, h = l.img.height*l.scale; if (x >= l.x+w-12 && x <= l.x+w+12 && y >= l.y+h-12 && y <= l.y+h+12) return isRes = true; }
             for (let i = layers.length - 1; i >= 0; i--) {
-                const ly = layers[i];
-                const bounds = getTextBounds(ly.text, fSize);
-                if(ly.text && x >= ly.textX && x <= ly.textX + bounds.w && y >= ly.textY && y <= ly.textY + bounds.h) {
-                    isDragText = true; updateUI(i); 
-                    offX = x - ly.textX; offY = y - ly.textY; 
-                    return;
-                }
+                const ly = layers[i], b = getTextBounds(ly.text, fSize);
+                if(ly.text && x >= ly.textX && x <= ly.textX + b.w && y >= ly.textY && y <= ly.textY + b.h) { isDragText = true; updateUI(i); offX = x - ly.textX; offY = y - ly.textY; return; }
             }
-
             for (let i = layers.length - 1; i >= 0; i--) {
                 const ly = layers[i], w = ly.img.width*ly.scale, h = ly.img.height*ly.scale;
-                if (x >= ly.x && x <= ly.x+w && y >= ly.y && y <= ly.y+h) { 
-                    isDragImg = true; updateUI(i); 
-                    offX = x - ly.x; offY = y - ly.y; 
-                    textRelX = ly.textX - ly.x; textRelY = ly.textY - ly.y; 
-                    return; 
-                }
+                if (x >= ly.x && x <= ly.x+w && y >= ly.y && y <= ly.y+h) { isDragImg = true; updateUI(i); offX = x - ly.x; offY = y - ly.y; textRelX = ly.textX - ly.x; textRelY = ly.textY - ly.y; return; }
             }
             updateUI(-1);
         };
         
         window.onmousemove = e => {
-            if (isPlay || (!isDragImg && !isDragText && !isRes)) return;
-            const {x, y} = getPos(e), l = layers[sel];
-            
-            if (isRes) {
-                const oldSc = l.scale;
-                l.scale = Math.max(0.05, (x - l.x) / l.img.width); 
-                const ratio = l.scale / oldSc;
-                l.textX = l.x + (l.textX - l.x) * ratio; l.textY = l.y + (l.textY - l.y) * ratio;
-            } else if (isDragText) { 
-                l.textX = x - offX; l.textY = y - offY; 
-            } else if (isDragImg) { 
-                l.x = x - offX; l.y = y - offY; 
-                l.textX = l.x + textRelX; l.textY = l.y + textRelY; 
-            }
+            if (isPlay || (!isDragImg && !isDragText && !isRes)) return; const {x, y} = getPos(e), l = layers[sel];
+            if (isRes) { const oldSc = l.scale; l.scale = Math.max(0.05, (x - l.x) / l.img.width); const r = l.scale / oldSc; l.textX = l.x + (l.textX - l.x) * r; l.textY = l.y + (l.textY - l.y) * r; } 
+            else if (isDragText) { l.textX = x - offX; l.textY = y - offY; } else if (isDragImg) { l.x = x - offX; l.y = y - offY; l.textX = l.x + textRelX; l.textY = l.y + textRelY; }
             draw();
         };
-        
-        window.onmouseup = () => {
-            if (isDragImg || isDragText || isRes) triggerAutoSave();
-            isDragImg = isDragText = isRes = false;
-        }
+        window.onmouseup = () => { if (isDragImg || isDragText || isRes) triggerAutoSave(); isDragImg = isDragText = isRes = false; };
 
         const render = (c, t, dur) => {
-            let pRaw = Math.min(1, t / dur);
-            let p = ease(pRaw);
-            let postP = Math.max(0, (t - dur) / 2000); 
-            let eff = $('globalEffect').value;
-            
+            let pRaw = Math.min(1, t / dur), p = ease(pRaw), postP = Math.max(0, (t - dur) / 2000), eff = $('globalEffect').value;
             const alpha = Math.min(p * 1.5, 1);
             
             layers.forEach(l => {
-                let s = l.scale, tX = l.x, tY = l.y, w = l.img.width*s, h = l.img.height*s;
-                let dx = 0, dy = 0; 
-
-                if(l.anim === 'slideLeft') dx = -(1-p)*70; 
-                else if(l.anim === 'slideRight') dx = (1-p)*70;
-                else if(l.anim === 'slideUp') dy = (1-p)*70; 
-                else if(l.anim === 'slideDown') dy = -(1-p)*70;
+                let s = l.scale, tX = l.x, tY = l.y, w = l.img.width*s, h = l.img.height*s, dx = 0, dy = 0; 
+                if(l.anim === 'slideLeft') dx = -(1-p)*70; else if(l.anim === 'slideRight') dx = (1-p)*70; else if(l.anim === 'slideUp') dy = (1-p)*70; else if(l.anim === 'slideDown') dy = -(1-p)*70;
                 else if(l.anim === 'zoomIn') { s *= 0.7 + p*0.3; dx = -(l.img.width*s - w)/2; dy = -(l.img.height*s - h)/2; }
                 
-                c.globalAlpha = alpha;
-                c.drawImage(l.img, tX + dx, tY + dy, l.img.width*s, l.img.height*s);
+                c.globalAlpha = alpha; c.drawImage(l.img, tX + dx, tY + dy, l.img.width*s, l.img.height*s);
 
-                // --- 효과 1: 테두리 빛 궤적 (진행 중) ---
+                // --- 효과: 테두리 빛 궤적 (진행 중) ---
                 if (eff === 'trace' && pRaw < 1) {
-                    let perim = (w + h) * 2;
-                    c.save();
-                    c.strokeStyle = '#ffffff';
-                    c.shadowColor = '#ffffff';
-                    c.shadowBlur = 8;
-                    c.lineWidth = 2;
-                    c.setLineDash([perim * 0.15, perim * 0.85]); 
-                    c.lineDashOffset = -perim * pRaw * 2; 
-                    c.strokeRect(tX + dx, tY + dy, w, h);
-                    c.restore();
+                    let perim = (w + h) * 2; c.save(); c.strokeStyle = '#ffffff'; c.shadowColor = '#ffffff'; c.shadowBlur = 8; c.lineWidth = 2;
+                    c.setLineDash([perim * 0.15, perim * 0.85]); c.lineDashOffset = -perim * pRaw * 2; c.strokeRect(tX + dx, tY + dy, w, h); c.restore();
                 }
                 
-                // --- 효과 2: 상하 교차 선 (이미지 너비에 클리핑) ---
+                // --- 효과: 상하 교차 빛 (가로폭 완벽 클리핑) ---
                 if (eff === 'lines' && pRaw < 1) {
-                    let lineW = w * 0.8;
-                    let headX = tX + dx + (w + lineW) * pRaw - lineW; 
-                    
-                    c.save();
-                    c.beginPath();
-                    c.rect(tX + dx, tY + dy - 2, w, h + 4);
-                    c.clip();
-
+                    let lineW = w * 0.8, headX = tX + dx + (w + lineW) * pRaw - lineW; 
+                    c.save(); c.beginPath(); c.rect(tX + dx, tY + dy - 2, w, h + 4); c.clip();
                     let gradTop = c.createLinearGradient(headX, 0, headX + lineW, 0); 
-                    gradTop.addColorStop(1, 'rgba(255,255,255,1)');
-                    gradTop.addColorStop(0, 'rgba(255,255,255,0)');
-                    c.fillStyle = gradTop;
-                    c.fillRect(headX, tY + dy, lineW, 3);
-
-                    let headXBot = tX + dx + w - (w + lineW) * pRaw + lineW; 
-                    let gradBot = c.createLinearGradient(headXBot - lineW, 0, headXBot, 0); 
-                    gradBot.addColorStop(0, 'rgba(255,255,255,1)');
-                    gradBot.addColorStop(1, 'rgba(255,255,255,0)');
-                    c.fillStyle = gradBot;
-                    c.fillRect(headXBot - lineW, tY + dy + h - 3, lineW, 3);
-                    c.restore();
+                    gradTop.addColorStop(1, 'rgba(255,255,255,1)'); gradTop.addColorStop(0, 'rgba(255,255,255,0)'); c.fillStyle = gradTop; c.fillRect(headX, tY + dy, lineW, 3);
+                    let headXBot = tX + dx + w - (w + lineW) * pRaw + lineW, gradBot = c.createLinearGradient(headXBot - lineW, 0, headXBot, 0); 
+                    gradBot.addColorStop(0, 'rgba(255,255,255,1)'); gradBot.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = gradBot; c.fillRect(headXBot - lineW, tY + dy + h - 3, lineW, 3); c.restore();
                 }
 
-                // --- 효과 4: 테두리 궤적 (종료 후) ---
+                // --- 효과: 테두리 빛 궤적 (종료 후) ---
                 if (eff === 'trace_after' && pRaw >= 1 && postP < 1) {
-                    let perim = (w + h) * 2;
-                    c.save();
-                    c.strokeStyle = '#ffffff';
-                    c.shadowColor = '#ffffff';
-                    c.shadowBlur = 8;
-                    c.lineWidth = 2;
-                    c.setLineDash([perim * 0.15, perim * 0.85]);
-                    c.lineDashOffset = -perim * postP * 3; 
-                    c.globalAlpha = Math.max(0, 1 - postP * 1.5); 
-                    c.strokeRect(tX + dx, tY + dy, w, h);
-                    c.restore();
+                    let perim = (w + h) * 2; c.save(); c.strokeStyle = '#ffffff'; c.shadowColor = '#ffffff'; c.shadowBlur = 8; c.lineWidth = 2;
+                    c.setLineDash([perim * 0.15, perim * 0.85]); c.lineDashOffset = -perim * postP * 3; c.globalAlpha = Math.max(0, 1 - postP * 1.5); c.strokeRect(tX + dx, tY + dy, w, h); c.restore();
                 }
 
                 if(l.text) {
-                    c.save();
-                    c.translate(l.textX + dx, l.textY + dy);
-                    if (l.anim === 'zoomIn') { let ts = 0.7 + p * 0.3; c.scale(ts, ts); }
-                    
-                    c.font = getFontStr();
-                    c.textBaseline = 'top';
-                    
+                    c.save(); c.translate(l.textX + dx, l.textY + dy); if (l.anim === 'zoomIn') { let ts = 0.7 + p * 0.3; c.scale(ts, ts); }
+                    c.font = getFontStr(); c.textBaseline = 'top';
                     if ($('gShadow').checked) { c.shadowColor = 'rgba(0,0,0,0.6)'; c.shadowBlur = 6; }
                     if ($('gStroke').checked) { c.lineWidth = parseInt($('gStrokeWidth').value) || 3; c.strokeStyle = $('gStrokeHex').value; }
 
-                    let chars = l.text.split('');
-                    let isVert = $('gVertical').checked;
-                    let fSize = parseInt($('gFontSize').value) || 60;
-                    let bounds = getTextBounds(l.text, fSize);
-                    let charX = 0, charY = 0;
-                    let lineHeight = fSize * 1.1;
-                    
-                    let tSpdMs = getTypeSpeedMs();
+                    let chars = l.text.split(''), isVert = $('gVertical').checked, fSize = parseInt($('gFontSize').value) || 60, b = getTextBounds(l.text, fSize);
+                    let charX = 0, charY = 0, lineHeight = fSize * 1.1, tSpdMs = getTypeSpeedMs();
 
                     chars.forEach((ch, idx) => {
-                        let targetT = idx * tSpdMs;
-                        let fadeT = 150; 
-                        let charP = Math.min(Math.max((t - targetT) / fadeT, 0), 1);
-                        c.globalAlpha = charP * alpha;
-                        
+                        let charP = Math.min(Math.max((t - idx * tSpdMs) / 150, 0), 1); c.globalAlpha = charP * alpha;
                         if(ch !== ' ') {
-                            c.fillStyle = l.colors[idx] || '#ffffff';
-                            let cx = isVert ? charX + (bounds.w / 2) - (c.measureText(ch).width / 2) - 2 : charX;
-                            
-                            if ($('gStroke').checked) c.strokeText(ch, cx, charY); 
-                            c.fillText(ch, cx, charY);   
+                            c.fillStyle = l.colors[idx] || '#ffffff'; let cx = isVert ? charX + (b.w / 2) - (c.measureText(ch).width / 2) - 2 : charX;
+                            if ($('gStroke').checked) c.strokeText(ch, cx, charY); c.fillText(ch, cx, charY);   
                         }
-                        
-                        if (isVert) charY += lineHeight;
-                        else charX += c.measureText(ch).width;
-                    });
-                    c.restore();
+                        if (isVert) charY += lineHeight; else charX += c.measureText(ch).width;
+                    }); c.restore();
                 }
             });
             
-            // --- 효과 3: 번쩍임 (종료 후) ---
-            if (eff === 'flash' && pRaw >= 1 && postP < 1) {
-                let flashAlpha = Math.max(0, 1 - postP * 4); 
-                if (flashAlpha > 0) {
-                    c.save();
-                    c.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
-                    c.fillRect(0, 0, W, H);
-                    c.restore();
-                }
-            }
-
+            // --- 효과: 전체 화면 번쩍 (종료 후) ---
+            if (eff === 'flash' && pRaw >= 1 && postP < 1) { let flashA = Math.max(0, 1 - postP * 4); if (flashA > 0) { c.save(); c.fillStyle = `rgba(255, 255, 255, ${flashA})`; c.fillRect(0, 0, W, H); c.restore(); } }
             c.globalAlpha = 1.0;
         };
 
         const draw = () => {
-            if (isPlay || $('generateBtn').disabled) return;
-            ctx.clearRect(0, 0, W, H);
-            let dur = getDuration();
-            // 정지 상태일 때는 모든 애니메이션이 종료된 시점의 최종 화면(dur + 2000)을 보여줌
-            render(ctx, dur + 2000, dur); 
-            
-            const l = layers[sel];
+            if (isPlay || $('generateBtn').disabled) return; ctx.clearRect(0, 0, W, H); let dur = getDuration(); render(ctx, dur + 2000, dur); const l = layers[sel];
             if (l) {
-                const w = l.img.width*l.scale, h = l.img.height*l.scale;
-                ctx.strokeStyle = ctx.fillStyle = '#0055FF'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
+                const w = l.img.width*l.scale, h = l.img.height*l.scale; ctx.strokeStyle = ctx.fillStyle = '#0055FF'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
                 ctx.strokeRect(l.x, l.y, w, h); ctx.setLineDash([]); ctx.fillRect(l.x+w-6, l.y+h-6, 12, 12);
-                
-                if(l.text) {
-                    const fSize = parseInt($('gFontSize').value) || 60;
-                    const bounds = getTextBounds(l.text, fSize);
-                    ctx.strokeRect(l.textX - 2, l.textY - 2, bounds.w, bounds.h);
-                }
+                if(l.text) ctx.strokeRect(l.textX - 2, l.textY - 2, getTextBounds(l.text, parseInt($('gFontSize').value) || 60).w, getTextBounds(l.text, parseInt($('gFontSize').value) || 60).h);
             }
         };
 
         const exec = cb => { const t = sel; updateUI(-1); cb(t); };
         
         $('previewBtn').onclick = () => {
-            if (!layers.length || isPlay || $('generateBtn').disabled) return;
-            isPlay = true; 
-            let dur = getDuration();
-            let totalDur = dur + 2000; 
-            let startT = performance.now();
-            
+            if (!layers.length || isPlay || $('generateBtn').disabled) return; isPlay = true; 
+            let dur = getDuration(), totalDur = dur + 2000, startT = performance.now();
             exec(t_idx => { 
                 const loop = (now) => { 
-                    if (!isPlay) return;
-                    let t = now - startT;
-                    
-                    if (t >= totalDur) {
-                        ctx.clearRect(0, 0, W, H);
-                        render(ctx, totalDur, dur);
-                        setTimeout(() => { isPlay = false; updateUI(t_idx); draw(); }, 100); 
-                        return;
-                    }
-                    ctx.clearRect(0, 0, W, H);
-                    render(ctx, t, dur); 
-                    requestAnimationFrame(loop); 
-                }; 
-                requestAnimationFrame(loop); 
+                    if (!isPlay) return; let t = now - startT;
+                    if (t >= totalDur) { ctx.clearRect(0, 0, W, H); render(ctx, totalDur, dur); setTimeout(() => { isPlay = false; updateUI(t_idx); draw(); }, 100); return; }
+                    ctx.clearRect(0, 0, W, H); render(ctx, t, dur); requestAnimationFrame(loop); 
+                }; requestAnimationFrame(loop); 
             });
         };
 
         $('generateBtn').onclick = () => {
             if (!layers.length || isPlay) return alert("이미지를 추가하거나 재생을 멈춰주세요.");
+            const mode = $('quality').value, isAPNG = mode === 'apng', isMP4 = mode === 'mp4', isGifTrans = mode === 'gif' && $('gifTransparentCheck').checked, bgColor = $('gifBgHex').value;
+            const dur = getDuration(), totalDur = dur + 2000;
+            let videoExt = (window.MediaRecorder && MediaRecorder.isTypeSupported('video/mp4')) ? '.mp4' : '.webm', ext = isAPNG ? '.png' : (isMP4 ? videoExt : '.gif');
+            let fn = prompt("저장할 파일명:", "FebCryptbound_fighting")?.trim(); if (!fn) return; if (!fn.endsWith(ext)) fn += ext;
             
-            const mode = $('quality').value;
-            const isAPNG = mode === 'apng';
-            const isMP4 = mode === 'mp4';
-            const isGifTrans = mode === 'gif' && $('gifTransparentCheck').checked;
-            const bgColor = $('gifBgHex').value;
+            const btn = $('generateBtn'), og = btn.innerText; btn.disabled = $('previewBtn').disabled = true; btn.innerText = "⏳ 인코딩 중...";
+            const endGenerate = (msg) => { btn.innerText = msg; setTimeout(() => { btn.innerText = og; btn.disabled = $('previewBtn').disabled = false; updateUI(sel); }, 2000); };
             
-            const dur = getDuration();
-            const totalDur = dur + 2000; 
+            let eFrames = Math.min(100, Math.round(totalDur / 50)), eDelay = Math.round(totalDur / eFrames), sc = 1.0;
+            if (isAPNG) { const curP = W * H * eFrames; if (curP > 4000000) sc = Math.min(1.0, Math.sqrt(4000000 / curP)); }
             
-            let videoExt = (window.MediaRecorder && MediaRecorder.isTypeSupported('video/mp4')) ? '.mp4' : '.webm';
-            let ext = isAPNG ? '.png' : (isMP4 ? videoExt : '.gif');
-            
-            let fn = prompt("저장할 파일명:", "FebCryptbound_fighting")?.trim(); if (!fn) return; 
-            if (!fn.endsWith(ext)) fn += ext;
-            
-            const btn = $('generateBtn'), og = btn.innerText;
-            btn.disabled = $('previewBtn').disabled = true; btn.innerText = "⏳ 인코딩 중...";
-            
-            let eFrames = Math.round(totalDur / 50); 
-            if (eFrames > 100) eFrames = 100; 
-            const eDelay = Math.round(totalDur / eFrames); 
-            
-            let sc = 1.0;
-            if (isAPNG) {
-                const maxPixels = 4000000; 
-                const curPixels = W * H * eFrames;
-                if (curPixels > maxPixels) sc = Math.min(1.0, Math.sqrt(maxPixels / curPixels));
-            }
-            
-            const eW = Math.floor(W * sc);
-            const eH = Math.floor(H * sc);
-            const oCtx = document.createElement('canvas').getContext('2d', { willReadFrequently: true }); 
-            oCtx.canvas.width = eW; oCtx.canvas.height = eH;
+            const eW = Math.floor(W * sc), eH = Math.floor(H * sc), oCtx = document.createElement('canvas').getContext('2d', { willReadFrequently: true }); oCtx.canvas.width = eW; oCtx.canvas.height = eH;
             
             exec(t_idx => {
                 if (isMP4) {
                     try {
-                        let mimeType = videoExt === '.mp4' ? 'video/mp4' : 'video/webm';
-                        const stream = oCtx.canvas.captureStream(30);
-                        const recorder = new MediaRecorder(stream, { mimeType: mimeType });
-                        const chunks = [];
-                        
+                        let mimeType = videoExt === '.mp4' ? 'video/mp4' : 'video/webm', stream = oCtx.canvas.captureStream(30), recorder = new MediaRecorder(stream, { mimeType }), chunks = [];
                         recorder.ondataavailable = e => chunks.push(e.data);
-                        recorder.onstop = () => {
-                            const blob = new Blob(chunks, { type: mimeType });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
-                            btn.innerText = "🔥 완료!";
-                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); draw(); }, 2000);
-                        };
-                        
-                        recorder.start();
-                        let startT = performance.now();
-                        
+                        recorder.onstop = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(chunks, { type: mimeType })); a.download = fn; a.click(); endGenerate("🔥 완료!"); };
+                        recorder.start(); let startT = performance.now();
                         const renderLoop = (now) => {
-                            let t = now - startT;
-                            if (t > totalDur) t = totalDur;
-                            
-                            oCtx.save(); 
-                            oCtx.clearRect(0, 0, eW, eH); 
-                            oCtx.fillStyle = bgColor; 
-                            oCtx.fillRect(0, 0, eW, eH);
-                            oCtx.scale(sc, sc); 
-                            render(oCtx, t, dur); 
-                            oCtx.restore();
-                            
-                            if (t < totalDur) {
-                                requestAnimationFrame(renderLoop);
-                            } else {
-                                setTimeout(() => recorder.stop(), 100);
-                            }
-                        };
-                        requestAnimationFrame(renderLoop);
-                    } catch(e) {
-                        btn.innerText = "❌ 브라우저 미지원";
-                        alert("이 브라우저에서는 비디오 저장을 완벽히 지원하지 않습니다.\nAPNG나 GIF를 사용해주세요.");
-                        setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); }, 2000);
-                    }
+                            let t = Math.min(now - startT, totalDur); oCtx.save(); oCtx.clearRect(0, 0, eW, eH); oCtx.fillStyle = bgColor; oCtx.fillRect(0, 0, eW, eH); oCtx.scale(sc, sc); render(oCtx, t, dur); oCtx.restore();
+                            if (t < totalDur) requestAnimationFrame(renderLoop); else setTimeout(() => recorder.stop(), 100);
+                        }; requestAnimationFrame(renderLoop);
+                    } catch(e) { endGenerate("❌ 브라우저 미지원"); alert("이 브라우저는 비디오 저장을 미지원합니다.\nAPNG나 GIF를 사용해주세요."); }
                 } else if (isAPNG) {
                     const frames = [];
-                    for (let i = 0; i < eFrames; i++) {
-                        let t = i * eDelay;
-                        oCtx.save(); oCtx.clearRect(0, 0, eW, eH); oCtx.scale(sc, sc); render(oCtx, t, dur); oCtx.restore();
-                        frames.push(oCtx.getImageData(0, 0, eW, eH).data.buffer);
-                    }
+                    for (let i = 0; i < eFrames; i++) { oCtx.save(); oCtx.clearRect(0, 0, eW, eH); oCtx.scale(sc, sc); render(oCtx, i * eDelay, dur); oCtx.restore(); frames.push(oCtx.getImageData(0, 0, eW, eH).data.buffer); }
                     setTimeout(() => {
-                        try {
-                            const encoded = UPNG.encode(frames, eW, eH, 256, Array(eFrames).fill(eDelay));
-                            const blob = new Blob([encoded], { type: 'image/apng' });
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
-                            btn.innerText = "🔥 완료!";
-                        } catch (e) { 
-                            btn.innerText = "❌ 오류 발생"; 
-                            alert("APNG 생성 중 오류 발생:\n" + e.message);
-                        } finally { 
-                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); draw(); }, 2000); 
-                        }
+                        try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([UPNG.encode(frames, eW, eH, 256, Array(eFrames).fill(eDelay))], { type: 'image/apng' })); a.download = fn; a.click(); endGenerate("🔥 완료!");
+                        } catch (e) { endGenerate("❌ 오류 발생"); alert("APNG 오류:\n" + e.message); }
                     }, 100);
                 } else {
                     const processGif = async () => {
                         try {
-                            let workerUrl = gifWorkerUrl;
-                            if (!workerUrl) {
-                                const res = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');
-                                if(!res.ok) throw new Error("워커 다운로드 실패 (" + res.status + ")");
-                                const text = await res.text();
-                                const blob = new Blob([text], { type: 'application/javascript' });
-                                workerUrl = gifWorkerUrl = URL.createObjectURL(blob);
-                            }
-                            
-                            const gif = new GIF({
-                                workers: 2,
-                                quality: 1, 
-                                width: eW,
-                                height: eH,
-                                workerScript: workerUrl,
-                                transparent: isGifTrans ? 0xFF00FF : null, 
-                                background: !isGifTrans ? bgColor : '#ffffff'
-                            });
-                            
+                            if (!gifWorkerUrl) { const res = await fetch('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'); if(!res.ok) throw new Error("워커 실패"); gifWorkerUrl = URL.createObjectURL(new Blob([await res.text()], { type: 'application/javascript' })); }
+                            const gif = new GIF({ workers: 2, quality: 1, width: eW, height: eH, workerScript: gifWorkerUrl, transparent: isGifTrans ? 0xFF00FF : null, background: !isGifTrans ? bgColor : '#ffffff' });
                             for (let i = 0; i < eFrames; i++) {
-                                let t = i * eDelay;
-                                oCtx.save();
-                                oCtx.clearRect(0, 0, eW, eH); 
-                                
-                                if (!isGifTrans) {
-                                    oCtx.fillStyle = bgColor;
-                                    oCtx.fillRect(0, 0, eW, eH);
-                                }
-                                
-                                oCtx.scale(sc, sc); 
-                                render(oCtx, t, dur); 
-                                oCtx.restore();
-                                
+                                oCtx.save(); oCtx.clearRect(0, 0, eW, eH); if (!isGifTrans) { oCtx.fillStyle = bgColor; oCtx.fillRect(0, 0, eW, eH); }
+                                oCtx.scale(sc, sc); render(oCtx, i * eDelay, dur); oCtx.restore();
                                 if (isGifTrans) {
-                                    const imgData = oCtx.getImageData(0, 0, eW, eH);
-                                    const data = imgData.data;
-                                    for (let j = 0; j < data.length; j += 4) {
-                                        if (data[j+3] < 128) {
-                                            data[j] = 255; data[j+1] = 0; data[j+2] = 255; data[j+3] = 255; 
-                                        } else {
-                                            if (data[j] === 255 && data[j+1] === 0 && data[j+2] === 255) {
-                                                data[j] = 254;
-                                            }
-                                            data[j+3] = 255; 
-                                        }
-                                    }
+                                    const imgData = oCtx.getImageData(0, 0, eW, eH), data = imgData.data;
+                                    for (let j = 0; j < data.length; j += 4) { if (data[j+3] < 128) { data[j] = 255; data[j+1] = 0; data[j+2] = 255; data[j+3] = 255; } else { if (data[j] === 255 && data[j+1] === 0 && data[j+2] === 255) data[j] = 254; data[j+3] = 255; } }
                                     oCtx.putImageData(imgData, 0, 0);
                                 }
-                                
                                 gif.addFrame(oCtx.canvas, {copy: true, delay: eDelay});
                             }
-                            
-                            gif.on('finished', function(blob) {
-                                const url = URL.createObjectURL(blob);
-                                const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
-                                btn.innerText = "🔥 완료!";
-                                setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); draw(); }, 2000);
-                            });
-                            
-                            gif.render();
-                        } catch (e) {
-                            btn.innerText = "❌ 오류 발생";
-                            alert("GIF 생성 중 오류가 발생했습니다.\n\n상세 사유: " + e.message + "\n\n(일시적인 네트워크 문제일 수 있습니다. 계속 오류가 발생하면 APNG 형식을 사용해주세요!)");
-                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); }, 2000);
-                        }
-                    };
-                    processGif();
+                            gif.on('finished', function(blob) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = fn; a.click(); endGenerate("🔥 완료!"); }); gif.render();
+                        } catch (e) { endGenerate("❌ 오류 발생"); alert("GIF 오류:\n" + e.message); }
+                    }; processGif();
                 }
             });
         };
