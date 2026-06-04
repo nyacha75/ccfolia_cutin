@@ -10,14 +10,9 @@
     
     <style>
         /* 기본 스타일 */
-        body { font-family: 'Malgun Gothic', sans-serif; background: #fff; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; }
+        body { font-family: 'Malgun Gothic', sans-serif; background: #fff; color: #333; padding: 20px; display: flex; flex-direction: column; align-items: center; margin: 0; min-height: 100vh; overflow-x: hidden; }
         
-        /* 헤더 박스 */
-        .header-box { background: #F0F4FF; border: 2px solid #0055FF; border-radius: 8px; padding: 15px 30px; margin-bottom: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0, 85, 255, 0.08); width: 100%; max-width: 1135px; box-sizing: border-box; }
-        .header-box h1 { margin: 0; color: #0055FF; font-size: 26px; }
-        .header-box p { margin: 6px 0 0 0; font-size: 13px; color: #555; }
-
-        .container { display: flex; gap: 15px; max-width: 1200px; width: 100%; justify-content: center; align-items: flex-start; }
+        .container { display: flex; gap: 15px; width: 100%; justify-content: center; align-items: flex-start; }
         
         /* 캔버스 및 좌측 영역 */
         .canvas-wrapper { display: flex; flex-direction: column; width: fit-content; max-width: 100%; }
@@ -30,7 +25,7 @@
         .hint-box span { color: #0055FF; font-weight: bold; }
         
         /* 컨트롤 패널 */
-        .control-panel { width: 440px; display: flex; flex-direction: column; gap: 15px; position: sticky; top: 20px; background: #FCFAF7; padding: 20px; border-radius: 8px; border: 2px solid #E8D8C8; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-height: 90vh; overflow-y: auto; }
+        .control-panel { width: 440px; display: flex; flex-direction: column; gap: 15px; position: sticky; top: 20px; background: #FCFAF7; padding: 20px; border-radius: 8px; border: 2px solid #E8D8C8; box-shadow: 0 4px 15px rgba(0,0,0,0.05); max-height: 90vh; overflow-y: auto; flex-shrink: 0; }
         .control-group { border-bottom: 1px solid #E8D8C8; padding-bottom: 15px; }
         .control-group:last-child { border-bottom: none; padding-bottom: 0; }
         .control-group h3 { margin: 0 0 10px 0; font-size: 15px; color: #0055FF; }
@@ -42,7 +37,7 @@
         input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; text-align: center; }
 
-        /* 컬러 콤보 박스 */
+        /* 컬러 피커 컴팩트 UI */
         .color-combo { display: flex; align-items: center; border: 1px solid #ccc; border-radius: 3px; background: #fff; height: 22px; width: fit-content; overflow: hidden; transition: 0.2s; }
         .color-combo input[type="color"] { width: 22px; height: 22px; border: none; padding: 0; margin: 0; cursor: pointer; background: transparent; }
         .color-combo input[type="text"] { width: 55px; border: none; font-size: 11px; text-transform: uppercase; font-family: monospace; text-align: center; outline: none; padding: 0; }
@@ -84,9 +79,9 @@
     <div style="visibility: hidden; position: absolute; font-family: 'Jua';">.</div>
     <div style="visibility: hidden; position: absolute; font-family: 'Nanum Myeongjo';">.</div>
 
-    <div class="header-box">
-        <h1>🌊 [쏘랑] 다인 컷인 에디터</h1>
-        <p>복잡한 툴 없이 웹에서 바로, 퀄리티 높은 다인 전투 컷인을 제작하세요.</p>
+    <div id="mainHeader" style="width: 1055px; margin-bottom: 20px; transition: width 0.2s ease;">
+        <h2 style="margin: 0 0 10px 0; color: #0055FF; text-align: left;">🌊 [쏘랑] 다인 컷인 에디터</h2>
+        <hr style="border: 0; border-top: 2px solid #E8D8C8; margin: 0;">
     </div>
 
     <div class="container">
@@ -130,7 +125,7 @@
                 </div>
                 
                 <div style="text-align:center; margin: 8px 0 3px 0;">
-                    <span onclick="toggleAdvAlign()" style="text-decoration: underline; cursor: pointer; font-size: 11px; color: #555;" id="advAlignBtn">상세 조절 펼치기 ▼</span>
+                    <span onclick="toggleAdvAlign(this)" style="text-decoration: underline; cursor: pointer; font-size: 11px; color: #555;">상세 조절 펼치기 ▼</span>
                 </div>
                 
                 <div id="advAlignWrapper" style="display:none; margin-top:8px;">
@@ -153,8 +148,8 @@
             <div class="control-group" style="flex:1; display:flex; flex-direction:column;">
                 <h3>3. 레이어</h3>
                 <div class="row" style="margin-bottom:8px;">
-                    <label style="font-size:12px; font-weight:bold; width:85px;">애니메이션 속도:</label>
-                    <select id="animSpeed" onchange="toggleCustomSpeed(); draw();" style="flex:1; font-size:12px;">
+                    <label style="font-size:12px; width:80px;">애니메이션 속도:</label>
+                    <select id="animSpeed" onchange="toggleCustomSpeed(); draw();" style="width:110px; font-size:12px; flex:none;">
                         <option value="1000">빠르게</option>
                         <option value="2000" selected>기본</option>
                         <option value="3000">느리게</option>
@@ -169,7 +164,7 @@
                 <div id="layerList" class="layer-list"></div>
 
                 <div class="row" style="margin-top:8px;">
-                    <label style="font-size:12px; font-weight:bold; width:85px; color:#0055FF;">추가 효과:</label>
+                    <label style="font-size:12px; width:80px;">추가 효과:</label>
                     <select id="globalEffect" onchange="draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
                         <option value="none" selected>효과 없음</option>
                         <option value="trace">1. 각 이미지 테두리 빛 궤적 (진행 중)</option>
@@ -188,7 +183,7 @@
                 </div>
                 <div class="row">
                     <label style="font-size:12px; width:70px;">타이핑 속도:</label>
-                    <select id="typeSpeed" onchange="toggleCustomTypeSpeed(); draw(); triggerAutoSave();" style="flex:1; font-size:12px;">
+                    <select id="typeSpeed" onchange="toggleCustomTypeSpeed(); draw(); triggerAutoSave();" style="width:110px; font-size:12px; flex:none;">
                         <option value="50">빠르게</option>
                         <option value="100" selected>기본</option>
                         <option value="200">느리게</option>
@@ -231,17 +226,16 @@
 
             <div class="control-group">
                 <h3>5. 출력 파일 형식</h3>
-                <div class="row" style="flex-wrap: wrap; gap: 8px;">
-                    <select id="quality" onchange="toggleBgColor(); triggerAutoSave();" style="width: auto; min-width: 170px; font-size: 12px; flex-shrink: 0;">
+                <div class="row" style="flex-wrap: nowrap; gap: 8px;">
+                    <select id="quality" onchange="toggleBgColor(); triggerAutoSave();" style="width: 150px; font-size: 12px; flex-shrink: 0;">
                         <option value="apng" selected>APNG(코코포리아 최적화)</option>
                         <option value="gif">GIF</option>
-                        <option value="mp4">MP4 (원본 화질)</option>
+                        <option value="mp4">MP4</option>
                     </select>
                     
-                    <div id="bgOptionWrapper" style="display:none; align-items:center; gap:10px; background:#f5f5f5; border-radius:4px; border:1px solid #E8D8C8; padding:4px 8px;">
+                    <div id="bgOptionWrapper" style="display:none; align-items:center; gap:8px; background:#f5f5f5; border-radius:4px; border:1px solid #E8D8C8; padding:3px 6px; flex:1; min-width:0;">
                         
                         <div id="colorComboWrapper" style="display:flex; align-items:center; transition:0.2s;">
-                            <label style="font-size:11px; margin-right:4px; font-weight:bold;">배경색:</label>
                             <div class="color-combo">
                                 <input type="color" id="gifBgColor" value="#ffffff" oninput="$('gifBgHex').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave();" title="배경 색상">
                                 <input type="text" id="gifBgHex" value="#ffffff" maxlength="7" oninput="if(this.value.match(/^#[0-9a-fA-F]{6}$/i)) { $('gifBgColor').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave(); }">
@@ -252,11 +246,10 @@
                             <label class="fx-label" style="font-weight:bold; color:#0055FF; margin:0;"><input type="checkbox" id="gifTransparentCheck" onchange="toggleTrans();">투명</label>
                         </div>
 
-                        <label style="font-size:11px; display:flex; align-items:center; cursor:pointer; color:#0055FF; font-weight:bold; margin:0;">
+                        <label style="font-size:11px; display:flex; align-items:center; cursor:pointer; color:#0055FF; font-weight:bold; margin:0; margin-left:auto;">
                             <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgHex').value='#2b2b2b'; $('gifBgColor').value='#2b2b2b'; } else { $('gifBgHex').value='#ffffff'; $('gifBgColor').value='#ffffff'; } draw(); triggerAutoSave();">
                             코코포 배경
                         </label>
-                        
                     </div>
                 </div>
             </div>
@@ -281,9 +274,8 @@
         
         const ease = t => 1 - Math.pow(1 - t, 3);
 
-        window.toggleAdvAlign = () => {
+        window.toggleAdvAlign = (span) => {
             const wrap = $('advAlignWrapper');
-            const span = $('advAlignBtn');
             if(wrap.style.display === 'none') {
                 wrap.style.display = 'block';
                 span.innerText = '상세 조절 접기 ▲';
@@ -360,6 +352,7 @@
             }
         };
 
+        // --- 데이터베이스 & 자동저장 ---
         const localDB = {
             db: null,
             init() {
@@ -390,14 +383,6 @@
                     req.onsuccess = () => res(req.result);
                     req.onerror = () => res(null);
                 });
-            },
-            remove(key) {
-                return new Promise((res) => {
-                    if (!this.db) return res();
-                    const tx = this.db.transaction('data', 'readwrite');
-                    tx.objectStore('data').delete(key);
-                    tx.oncomplete = res;
-                });
             }
         };
 
@@ -407,8 +392,7 @@
             clearTimeout(autoSaveTimer);
             autoSaveTimer = setTimeout(async () => {
                 try {
-                    const data = JSON.stringify(getProjectData());
-                    await localDB.set('ccfolia_cutin_backup', data);
+                    await localDB.set('ccfolia_cutin_backup', JSON.stringify(getProjectData()));
                     const st = $('autoSaveStatus');
                     if (st) { 
                         st.innerText = "✓ 방금 전 저장됨"; 
@@ -455,7 +439,10 @@
         const restoreProjectData = (data) => {
             const s = data.settings;
             if(s) {
-                $('gap').value = s.gap || 20;
+                ['gap', 'gFontSize', 'gStrokeWidth', 'typeSpeed', 'customTypeSpeed', 'animSpeed', 'customSpeed', 'globalEffect', 'quality'].forEach(id => { if(s[id]!==undefined) $(id).value = s[id]; });
+                ['gBold', 'gItalic', 'gShadow', 'gStroke', 'gVertical', 'gifTransparentCheck', 'ccfoliaBgCheck'].forEach(id => { if(s[id]!==undefined) $(id).checked = !!s[id]; });
+                ['gStrokeColor', 'gStrokeHex', 'gifBgColor', 'gifBgHex'].forEach(id => { if(s[id]!==undefined) $(id).value = s[id]; });
+                
                 if (s.globalFont && !Array.from($('globalFont').options).some(opt => opt.value === s.globalFont)) {
                     const opt = document.createElement('option');
                     opt.value = opt.text = s.globalFont;
@@ -463,33 +450,15 @@
                     customFonts.push(s.globalFont);
                 }
                 $('globalFont').value = s.globalFont || 'Black Han Sans';
-                $('gFontSize').value = s.gFontSize || 60;
-                $('gBold').checked = !!s.gBold;
-                $('gItalic').checked = !!s.gItalic;
-                $('gShadow').checked = !!s.gShadow;
-                $('gStroke').checked = !!s.gStroke;
-                $('gStrokeColor').value = s.gStrokeColor || '#000000';
-                $('gStrokeHex').value = s.gStrokeHex || '#000000';
-                $('gStrokeWidth').value = s.gStrokeWidth || 3;
-                $('gVertical').checked = !!s.gVertical;
-                $('typeSpeed').value = s.typeSpeed || 100;
-                $('customTypeSpeed').value = s.customTypeSpeed || 100;
-                $('animSpeed').value = s.animSpeed || 2000;
-                $('customSpeed').value = s.customSpeed || 2000;
-                if(s.globalEffect) $('globalEffect').value = s.globalEffect;
-                $('quality').value = s.quality || 'apng';
-                $('gifTransparentCheck').checked = !!s.gifTransparentCheck;
-                $('gifBgColor').value = s.gifBgColor || '#ffffff';
-                $('gifBgHex').value = s.gifBgHex || '#ffffff';
-                $('ccfoliaBgCheck').checked = !!s.ccfoliaBgCheck;
-
-                toggleCustomSpeed();
-                toggleCustomTypeSpeed();
+                
+                $('customSpeedWrapper').style.display = s.animSpeed === 'custom' ? 'flex' : 'none';
+                $('customTypeSpeedWrapper').style.display = s.typeSpeed === 'custom' ? 'flex' : 'none';
                 toggleBgColor();
                 toggleTrans();
 
                 W = canvasEl.width = s.canvasW || 600;
                 H = canvasEl.height = s.canvasH || 800;
+                if ($('mainHeader')) $('mainHeader').style.width = (W + 455) + 'px';
             }
 
             layers = [];
@@ -517,13 +486,10 @@
             if (!fn.endsWith('.json')) fn += '.json';
 
             const data = JSON.stringify(getProjectData());
-            const blob = new Blob([data], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
+            a.href = URL.createObjectURL(new Blob([data], { type: "application/json" }));
             a.download = fn;
             a.click();
-            URL.revokeObjectURL(url);
         };
 
         window.loadProjectFile = (e) => {
@@ -532,8 +498,7 @@
             const reader = new FileReader();
             reader.onload = ev => {
                 try {
-                    const data = JSON.parse(ev.target.result);
-                    restoreProjectData(data);
+                    restoreProjectData(JSON.parse(ev.target.result));
                 } catch(err) {
                     alert("프로젝트 파일을 불러오는 중 오류가 발생했습니다.");
                 }
@@ -559,12 +524,12 @@
             } catch(e) {}
         });
 
+        // --- 메인 로직 ---
         $('fontInput').onchange = async e => {
             for (let file of e.target.files) {
                 try {
                     const fontName = file.name.split('.')[0];
-                    const buffer = await file.arrayBuffer();
-                    const font = new FontFace(fontName, buffer);
+                    const font = new FontFace(fontName, await file.arrayBuffer());
                     await font.load();
                     document.fonts.add(font);
                     if(!customFonts.includes(fontName)) {
@@ -726,6 +691,7 @@
                 
                 W = canvasEl.width = newW; 
                 H = canvasEl.height = newH;
+                if ($('mainHeader')) $('mainHeader').style.width = (W + 455) + 'px';
                 
                 layers.forEach(ly => { ly.x += shiftX; ly.y += shiftY; ly.textX += shiftX; ly.textY += shiftY; });
             }
@@ -862,7 +828,7 @@
                 c.globalAlpha = alpha;
                 c.drawImage(l.img, tX + dx, tY + dy, l.img.width*s, l.img.height*s);
 
-                // --- 효과 1: 진행 중 테두리 궤적 ---
+                // --- 효과 1: 테두리 빛 궤적 (진행 중) ---
                 if (eff === 'trace' && pRaw < 1) {
                     let perim = (w + h) * 2;
                     c.save();
@@ -876,25 +842,32 @@
                     c.restore();
                 }
                 
-                // --- 효과 2: 진행 중 상하 교차 선 ---
+                // --- 효과 2: 상하 교차 선 (이미지 너비에 클리핑) ---
                 if (eff === 'lines' && pRaw < 1) {
-                    let lineW = w * 1.2;
+                    let lineW = w * 0.8;
                     let headX = tX + dx + (w + lineW) * pRaw - lineW; 
+                    
+                    c.save();
+                    c.beginPath();
+                    c.rect(tX + dx, tY + dy - 2, w, h + 4);
+                    c.clip();
+
                     let gradTop = c.createLinearGradient(headX, 0, headX + lineW, 0); 
-                    gradTop.addColorStop(1, 'rgba(255,255,255,0.9)');
+                    gradTop.addColorStop(1, 'rgba(255,255,255,1)');
                     gradTop.addColorStop(0, 'rgba(255,255,255,0)');
                     c.fillStyle = gradTop;
-                    c.fillRect(headX, tY + dy - 12, lineW, 4);
+                    c.fillRect(headX, tY + dy, lineW, 3);
 
                     let headXBot = tX + dx + w - (w + lineW) * pRaw + lineW; 
                     let gradBot = c.createLinearGradient(headXBot - lineW, 0, headXBot, 0); 
-                    gradBot.addColorStop(0, 'rgba(255,255,255,0.9)');
+                    gradBot.addColorStop(0, 'rgba(255,255,255,1)');
                     gradBot.addColorStop(1, 'rgba(255,255,255,0)');
                     c.fillStyle = gradBot;
-                    c.fillRect(headXBot - lineW, tY + dy + h + 8, lineW, 4);
+                    c.fillRect(headXBot - lineW, tY + dy + h - 3, lineW, 3);
+                    c.restore();
                 }
 
-                // --- 효과 4: 종료 후 테두리 궤적 ---
+                // --- 효과 4: 테두리 궤적 (종료 후) ---
                 if (eff === 'trace_after' && pRaw >= 1 && postP < 1) {
                     let perim = (w + h) * 2;
                     c.save();
@@ -950,7 +923,7 @@
                 }
             });
             
-            // --- 효과 3: 종료 후 전체 번쩍임 ---
+            // --- 효과 3: 번쩍임 (종료 후) ---
             if (eff === 'flash' && pRaw >= 1 && postP < 1) {
                 let flashAlpha = Math.max(0, 1 - postP * 4); 
                 if (flashAlpha > 0) {
@@ -968,7 +941,8 @@
             if (isPlay || $('generateBtn').disabled) return;
             ctx.clearRect(0, 0, W, H);
             let dur = getDuration();
-            render(ctx, dur, dur); 
+            // 정지 상태일 때는 모든 애니메이션이 종료된 시점의 최종 화면(dur + 2000)을 보여줌
+            render(ctx, dur + 2000, dur); 
             
             const l = layers[sel];
             if (l) {
@@ -1063,7 +1037,7 @@
                             const url = URL.createObjectURL(blob);
                             const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
                             btn.innerText = "🔥 완료!";
-                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); }, 2000);
+                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); draw(); }, 2000);
                         };
                         
                         recorder.start();
@@ -1111,7 +1085,7 @@
                             btn.innerText = "❌ 오류 발생"; 
                             alert("APNG 생성 중 오류 발생:\n" + e.message);
                         } finally { 
-                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); }, 2000); 
+                            setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); draw(); }, 2000); 
                         }
                     }, 100);
                 } else {
@@ -1173,7 +1147,7 @@
                                 const url = URL.createObjectURL(blob);
                                 const a = document.createElement('a'); a.href = url; a.download = fn; a.click(); URL.revokeObjectURL(url);
                                 btn.innerText = "🔥 완료!";
-                                setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); }, 2000);
+                                setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t_idx); draw(); }, 2000);
                             });
                             
                             gif.render();
