@@ -69,6 +69,7 @@
         #generateBtn { background: #0055FF; }
         button:disabled { background: #ccc !important; cursor: not-allowed; color: #888 !important; }
         
+        /* 스크롤바 */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f0f0f0; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
@@ -79,8 +80,8 @@
     <div style="visibility: hidden; position: absolute; font-family: 'Jua';">.</div>
     <div style="visibility: hidden; position: absolute; font-family: 'Nanum Myeongjo';">.</div>
 
-    <div id="mainHeader" style="width: 1055px; max-width: 100%; margin-bottom: 20px; transition: width 0.2s ease;">
-        <h2 style="margin: 0 0 10px 0; color: #0055FF; text-align: center;">🌊 [쏘랑] 다인 컷인 에디터</h2>
+    <div id="mainHeader" style="width: 1055px; max-width: 100%; margin-bottom: 20px; transition: width 0.2s ease; text-align: center;">
+        <h2 style="margin: 0 auto 15px auto; background: #0055FF; color: #fff; font-family: 'Black Han Sans', sans-serif; font-weight: 400; padding: 10px 40px; border-radius: 4px; display: inline-block; font-size: 26px; letter-spacing: 1px;">🌊 [쏘랑] 다인 컷인 에디터</h2>
         <hr style="border: 0; border-top: 2px solid #0055FF; margin: 0;">
     </div>
 
@@ -137,7 +138,7 @@
                         <button class="btn" onclick="act('distH')">↔️ 가로 간격 정렬</button>
                         <button class="btn" onclick="act('distV')">↕️ 세로 간격 정렬</button>
                         <div style="display:flex; justify-content:center; align-items:center; background:#fff; border:1px solid #E8D8C8; border-radius:4px; height: 32px;">
-                            <label style="font-size:11px; display:flex; align-items:center; margin:0; cursor:pointer; white-space:nowrap;">이미지 간격: 
+                            <label style="font-size:12px; display:flex; align-items:center; margin:0; cursor:pointer; white-space:nowrap;">이미지 간격: 
                                 <input type="number" id="gap" value="20" onchange="triggerAutoSave()" style="width:35px; margin-left:4px; height:20px; border:1px solid #ccc; border-radius:3px; padding:0;">
                             </label>
                         </div>
@@ -234,6 +235,7 @@
                     </select>
                     
                     <div id="bgOptionWrapper" style="display:none; align-items:center; gap:8px; background:#f5f5f5; border-radius:4px; border:1px solid #E8D8C8; padding:3px 6px; flex:1; min-width:0;">
+                        
                         <div id="colorComboWrapper" style="display:flex; align-items:center; transition:0.2s;">
                             <div class="color-combo">
                                 <input type="color" id="gifBgColor" value="#ffffff" oninput="$('gifBgHex').value=this.value; $('ccfoliaBgCheck').checked=false; draw(); triggerAutoSave();" title="배경 색상">
@@ -247,8 +249,9 @@
 
                         <label style="font-size:11px; display:flex; align-items:center; cursor:pointer; color:#0055FF; font-weight:bold; margin:0; margin-left:auto;">
                             <input type="checkbox" id="ccfoliaBgCheck" onchange="if(this.checked){ $('gifBgHex').value='#2b2b2b'; $('gifBgColor').value='#2b2b2b'; } else { $('gifBgHex').value='#ffffff'; $('gifBgColor').value='#ffffff'; } draw(); triggerAutoSave();">
-                            코코포 배경
+                            코코포
                         </label>
+                        
                     </div>
                 </div>
             </div>
@@ -376,7 +379,7 @@
             } catch(e) {}
         });
 
-        // --- UI & Rendering ---
+        // --- 메인 로직 ---
         $('fontInput').onchange = async e => {
             for (let file of e.target.files) {
                 try {
@@ -518,6 +521,9 @@
             let pRaw = Math.min(1, t / dur), p = ease(pRaw), postP = Math.max(0, (t - dur) / 2000), eff = $('globalEffect').value;
             const alpha = Math.min(p * 1.5, 1);
             
+            c.imageSmoothingEnabled = true;
+            c.imageSmoothingQuality = "high";
+            
             layers.forEach(l => {
                 let s = l.scale, tX = l.x, tY = l.y, w = l.img.width*s, h = l.img.height*s, dx = 0, dy = 0; 
                 if(l.anim === 'slideLeft') dx = -(1-p)*70; else if(l.anim === 'slideRight') dx = (1-p)*70; else if(l.anim === 'slideUp') dy = (1-p)*70; else if(l.anim === 'slideDown') dy = -(1-p)*70;
@@ -605,8 +611,9 @@
             const btn = $('generateBtn'), og = btn.innerText; btn.disabled = $('previewBtn').disabled = true; btn.innerText = "⏳ 인코딩 중...";
             const endGenerate = (msg) => { btn.innerText = msg; setTimeout(() => { btn.innerText = og; btn.disabled = $('previewBtn').disabled = false; updateUI(sel); }, 2000); };
             
-            let eFrames = Math.min(100, Math.round(totalDur / 50)), eDelay = Math.round(totalDur / eFrames), sc = 1.0;
-            if (isAPNG) { const curP = W * H * eFrames; if (curP > 4000000) sc = Math.min(1.0, Math.sqrt(4000000 / curP)); }
+            let eFrames = Math.min(100, Math.round(totalDur / (isAPNG ? 66 : 50))), eDelay = Math.round(totalDur / eFrames), sc = 1.0;
+            // 1MB 방어용 해상도 조절 로직 
+            if (isAPNG) { const curP = W * H * eFrames; if (curP > 5000000) sc = Math.min(1.0, Math.sqrt(5000000 / curP)); }
             
             const eW = Math.floor(W * sc), eH = Math.floor(H * sc), oCtx = document.createElement('canvas').getContext('2d', { willReadFrequently: true }); oCtx.canvas.width = eW; oCtx.canvas.height = eH;
             
