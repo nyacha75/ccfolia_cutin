@@ -591,9 +591,12 @@
                                 workerUrl = gifWorkerUrl = URL.createObjectURL(blob);
                             }
                             
+                            // [버그 수정 완료] width, height 명시적 추가
                             const gif = new GIF({
                                 workers: 2,
                                 quality: 10,
+                                width: eW,
+                                height: eH,
                                 workerScript: workerUrl,
                                 transparent: isGifTrans ? 0xFE00FE : null,
                                 background: isGifWhite ? '#FFFFFF' : '#FE00FE'
@@ -629,7 +632,8 @@
                                     oCtx.putImageData(imgData, 0, 0);
                                 }
                                 
-                                gif.addFrame(oCtx, {copy: true, delay: fD});
+                                // 안전성을 위해 oCtx 대신 oCtx.canvas 전체를 타겟팅
+                                gif.addFrame(oCtx.canvas, {copy: true, delay: fD});
                             }
                             
                             gif.on('finished', function(blob) {
@@ -642,7 +646,6 @@
                             gif.render();
                         } catch (e) {
                             btn.innerText = "❌ 오류 발생";
-                            // 정확히 어떤 부분에서 오류가 발생했는지 알려주는 상세 알림창
                             alert("GIF 생성 중 오류가 발생했습니다.\n\n상세 사유: " + e.message + "\n\n(일시적인 네트워크 문제일 수 있습니다. 계속 오류가 발생하면 APNG 형식을 사용해주세요!)");
                             setTimeout(() => { btn.innerText = og; btn.disabled = false; $('previewBtn').disabled = false; updateUI(t); }, 2000);
                         }
